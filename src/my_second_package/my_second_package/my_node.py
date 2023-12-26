@@ -1,5 +1,5 @@
 def main():
-    print('Hola este es mi segundo paquete de ROS2')
+    print('Hello, this is my second package in ROS2')
 
 
 if __name__ == '__main__':
