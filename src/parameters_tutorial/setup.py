@@ -1,6 +1,8 @@
+import os
+from glob import glob
 from setuptools import find_packages, setup
 
-package_name = 'pubsub_package'
+package_name = 'parameters_tutorial'
 
 setup(
     name=package_name,
@@ -10,20 +12,18 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name), glob('launch/*launch.[pxy][yma]*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='alejandro',
-    maintainer_email='alejandro@todo.todo',
+    maintainer_email='alejotoro.o@gmail.com',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'talker = pubsub_package.publisher:main',
-            'listener = pubsub_package.subscriber:main',
-            'talker_ci = pubsub_package.publisher_ci:main',
-            'listener_ci = pubsub_package.subscriber_ci:main'
+            'param_node = parameters_tutorial.parameter_node:main'
         ],
     },
 )

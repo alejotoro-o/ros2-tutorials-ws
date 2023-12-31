@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'pubsub_package'
+package_name = 'srvcli_package'
 
 setup(
     name=package_name,
@@ -14,16 +14,14 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='alejandro',
-    maintainer_email='alejandro@todo.todo',
+    maintainer_email='alejotoro.o@gmail.com',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'talker = pubsub_package.publisher:main',
-            'listener = pubsub_package.subscriber:main',
-            'talker_ci = pubsub_package.publisher_ci:main',
-            'listener_ci = pubsub_package.subscriber_ci:main'
+            'service = srvcli_package.service:main',
+            'client = srvcli_package.client:main'
         ],
     },
 )
