@@ -21,7 +21,10 @@ setup(
     entry_points={
         'console_scripts': [
             'action = action_package.counter_action_server:main',
-            'client = action_package.counter_action_client:main'
+            'client = action_package.counter_action_client:main',
+
+            'adv_action = action_package.advanced_counter_action_server:main',
+            'adv_client = action_package.advanced_counter_action_client:main'
         ],
     },
 )

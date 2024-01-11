@@ -40,9 +40,9 @@ def main(args=None):
 
     rclpy.init(args=args)
 
-    fibonacci_action_server = CounterActionServer()
+    counter_action_server = CounterActionServer()
 
-    rclpy.spin(fibonacci_action_server)
+    rclpy.spin(counter_action_server)
 
 
 if __name__ == '__main__':
