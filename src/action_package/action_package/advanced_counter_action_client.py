@@ -13,7 +13,7 @@ class CounterActionClient(Node):
 
         super().__init__('counter_action_client')
         self._action_client = ActionClient(self, Counter, 'counter')
-        self.goal_handle = None
+        self.goal_handle = None # New
 
     def send_goal(self, goal):
 
@@ -48,6 +48,7 @@ class CounterActionClient(Node):
         feedback = feedback_msg.feedback
         self.get_logger().info('Received feedback: {0}'.format(feedback.partial_sequence))
 
+    # New
     def cancel_goal(self):
 
         if self.goal_handle:
@@ -55,6 +56,7 @@ class CounterActionClient(Node):
             future = self.goal_handle.cancel_goal_async()
             future.add_done_callback(self.cancel_done)
 
+    # New
     def cancel_done(self, future):
         
         cancel_response = future.result()
@@ -64,10 +66,10 @@ class CounterActionClient(Node):
         else:
             self.get_logger().info('Goal failed to cancel')
 
-
+# New
 def control_loop(node):
 
-    thread = threading.Thread(target=rclpy.spin, args=(node,))
+    thread = threading.Thread(target=rclpy.spin, args=(node,)) # rclpy.spin(node)
     thread.start()
 
     while 1:

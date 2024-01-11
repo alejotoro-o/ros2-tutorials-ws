@@ -17,12 +17,13 @@ class CounterActionServer(Node):
                                            self.execute_callback,
                                            cancel_callback=self.cancel_callback)
         self.result = Counter.Result()
-        self.goal_handle = None
+        self.goal_handle = None # New
 
     async def execute_callback(self, goal_handle):
 
         self.get_logger().info('Executing goal...')
 
+        # New
         if self.goal_handle:
             
             self.get_logger().info('New goal received, aborting previous goal')
@@ -41,6 +42,7 @@ class CounterActionServer(Node):
 
             time.sleep(1)
 
+            # New
             if self.goal_handle.is_cancel_requested:
 
                 self.goal_handle.canceled()
@@ -49,13 +51,14 @@ class CounterActionServer(Node):
                 self.get_logger().info("Goal canceled")
                 return self.result
 
+            # New
             if self.goal_handle != goal_handle:
 
                 self.result.sequence = []
-                self.get_logger().info('New goal received, aborting previous goal')
+                # self.get_logger().info('New goal received, aborting previous goal')
                 return self.result
 
-        goal_handle.succeed()
+        self.goal_handle.succeed()
 
         self.get_logger().info("Goal finished")
         
@@ -65,6 +68,7 @@ class CounterActionServer(Node):
 
         return self.result
     
+    # New
     def cancel_callback(self, goal_handle):
 
         self.get_logger().info('Received cancel request')
