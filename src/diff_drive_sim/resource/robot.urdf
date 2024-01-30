@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<robot name="robot">
+    <webots>
+        <plugin type="diff_drive_sim.webots_robot_driver.RobotDriver"/>
+    </webots>
+</robot>
