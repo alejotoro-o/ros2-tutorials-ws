@@ -13,7 +13,7 @@ from launch.actions import DeclareLaunchArgument
 def generate_launch_description():
 
     package_dir = get_package_share_directory('diff_drive_sim')
-    robot_description_path = os.path.join(package_dir, 'resource', 'robot.urdf')
+    robot_description_path = os.path.join(package_dir, 'resource', 'diff_drive.urdf')
     with open(robot_description_path, 'r') as desc:
         robot_description = desc.read()
         
