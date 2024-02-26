@@ -83,6 +83,7 @@ DEF robot Robot {
       }
       device [
         DEF encoder1 PositionSensor {
+          name "encoder1"
         }
         DEF motor1 RotationalMotor {
           name "motor1"
@@ -116,6 +117,7 @@ DEF robot Robot {
       }
       device [
         DEF encoder2 PositionSensor {
+          name "encoder2"
         }
         DEF motor2 RotationalMotor {
           name "motor2"
