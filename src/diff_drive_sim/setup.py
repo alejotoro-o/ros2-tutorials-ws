@@ -7,14 +7,18 @@ data_files.append(('share/ament_index/resource_index/packages', ['resource/' + p
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_launch.py']))
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_dist_sensors_launch.py']))
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_rviz_launch.py']))
+data_files.append(('share/' + package_name + '/launch', ['launch/robot_lidar_launch.py']))
 ## World files
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive.wbt']))
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive_dist_sensors.wbt']))
+data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive_lidar.wbt']))
 ## Resource files
 data_files.append(('share/' + package_name + '/resource', ['resource/robot.urdf']))
 data_files.append(('share/' + package_name + '/resource', ['resource/robot_dist_sensors.urdf']))
 data_files.append(('share/' + package_name + '/resource', ['resource/diff_drive.urdf']))
+data_files.append(('share/' + package_name + '/resource', ['resource/diff_drive_lidar.urdf']))
 data_files.append(('share/' + package_name + '/resource', ['resource/urdf_view.rviz']))
+data_files.append(('share/' + package_name + '/resource', ['resource/lidar_scan.rviz']))
 
 data_files.append(('share/' + package_name, ['package.xml']))
 

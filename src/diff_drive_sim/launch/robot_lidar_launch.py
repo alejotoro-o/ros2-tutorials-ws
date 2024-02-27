@@ -13,7 +13,7 @@ from launch.actions import DeclareLaunchArgument
 def generate_launch_description():
 
     package_dir = get_package_share_directory('diff_drive_sim')
-    robot_description_path = os.path.join(package_dir, 'resource', 'diff_drive.urdf')
+    robot_description_path = os.path.join(package_dir, 'resource', 'diff_drive_lidar.urdf')
     with open(robot_description_path, 'r') as desc:
         robot_description = desc.read()
         
@@ -41,7 +41,7 @@ def generate_launch_description():
     )
 
     ## RVIZ
-    rviz2_config_path = os.path.join(package_dir, 'resource', 'urdf_view.rviz')
+    rviz2_config_path = os.path.join(package_dir, 'resource', 'lidar_scan.rviz')
     rviz2 = Node(
         package='rviz2',
         executable='rviz2',
@@ -51,7 +51,7 @@ def generate_launch_description():
 
     ## Webots and Robot Nodes
     webots = WebotsLauncher(
-        world=os.path.join(package_dir, 'worlds', 'diff_drive.wbt'),
+        world=os.path.join(package_dir, 'worlds', 'diff_drive_lidar.wbt'),
     )
     robot_driver = WebotsController(
         robot_name='robot',
