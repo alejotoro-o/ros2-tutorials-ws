@@ -8,7 +8,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.17922776487991124 -0.04664274060618417 0.9827013091702359 3.642357603809514
-  position 1.2335231992037665 0.7937390679555096 0.6060643028404712
+  position 1.920165618874948 1.1771044439883998 0.9027904605481738
 }
 TexturedBackground {
 }
@@ -91,7 +91,7 @@ DEF robot Robot {
       ]
       endPoint DEF wheel1 Solid {
         translation 0.06 2.179241556186644e-20 -0.020000000014762254
-        rotation 7.386635218287681e-10 1 7.380755383563498e-10 1.569999999999999
+        rotation 0 1 0 1.57
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -125,7 +125,7 @@ DEF robot Robot {
       ]
       endPoint DEF wheel2 Solid {
         translation -0.06 2.164991583143512e-20 -0.01999999998528609
-        rotation -7.362524174072067e-10 1 -7.356663531977414e-10 1.5699999999999987
+        rotation 0 1 0 1.57
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
