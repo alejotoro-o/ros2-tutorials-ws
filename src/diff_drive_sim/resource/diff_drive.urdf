@@ -32,7 +32,7 @@
     <joint name="base_link_to_front_frame" type="fixed">
         <parent link="base_link"/>
         <child link="front_frame"/>
-        <origin xyz="0 0.05 0" rpy="0 0 0"/>
+        <origin xyz="0.05 0 0" rpy="0 0 0"/>
     </joint>
 
     <link name="front_frame">
@@ -57,7 +57,7 @@
         <child link="wheel1"/>
         <axis xyz="0 0 1"/>
         <limit effort="10" velocity="10"/>
-        <origin xyz="0.06 0 -0.02" rpy="0 1.57 0"/>
+        <origin xyz="0 0.06 -0.02" rpy="1.57 0 0"/>
     </joint>
 
     <link name="wheel1">
@@ -82,7 +82,7 @@
         <child link="wheel2"/>
         <axis xyz="0 0 1"/>
         <limit effort="10" velocity="10"/>
-        <origin xyz="-0.06 0 -0.02" rpy="0 1.57 0"/>
+        <origin xyz="0 -0.06 -0.02" rpy="1.57 0 0"/>
     </joint>
 
     <link name="wheel2">
@@ -105,7 +105,7 @@
     <joint name="base_link_to_caster" type="fixed">
         <parent link="base_link"/>
         <child link="caster"/>
-        <origin xyz="0 0.06 -0.0375" rpy="0 0 0"/>
+        <origin xyz="0.06 0 -0.0375" rpy="0 0 0"/>
     </joint>
 
     <link name="caster">

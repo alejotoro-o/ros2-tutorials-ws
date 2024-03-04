@@ -7,8 +7,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.17922776487991124 -0.04664274060618417 0.9827013091702359 3.642357603809514
-  position 1.920165618874948 1.1771044439883998 0.9027904605481738
+  orientation -0.35477425288707853 0.1986326047889354 0.9136084050637767 2.195966099953184
+  position 1.5793854432905214 -2.3410788779534806 2.6284532345497174
 }
 TexturedBackground {
 }
@@ -23,7 +23,7 @@ DEF robot Robot {
   children [
     DEF caster BallJoint {
       jointParameters BallJointParameters {
-        anchor 0 0.06 -0.0375
+        anchor 0.06 0 -0.0375
       }
       jointParameters2 JointParameters {
       }
@@ -31,7 +31,7 @@ DEF robot Robot {
         axis 0 1 0
       }
       endPoint DEF caster Solid {
-        translation 0 0.06 -0.0375
+        translation 0.06 0 -0.0375
         children [
           DEF caster Shape {
             appearance PBRAppearance {
@@ -59,7 +59,7 @@ DEF robot Robot {
       }
     }
     DEF Front_frame Solid {
-      translation 0 0.05 0
+      translation 0.05 0 0
       children [
         DEF front_frame Shape {
           appearance PBRAppearance {
@@ -78,8 +78,8 @@ DEF robot Robot {
     }
     DEF wheel1 HingeJoint {
       jointParameters HingeJointParameters {
-        position 1.4762254924643133e-09
-        anchor 0.06 0 -0.02
+        axis 0 1 0
+        anchor 0 0.06 -0.02
       }
       device [
         DEF encoder1 PositionSensor {
@@ -90,8 +90,8 @@ DEF robot Robot {
         }
       ]
       endPoint DEF wheel1 Solid {
-        translation 0.06 2.179241556186644e-20 -0.020000000014762254
-        rotation 0 1 0 1.57
+        translation 0 0.06 -0.02
+        rotation 1 0 0 1.57
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -112,8 +112,8 @@ DEF robot Robot {
     }
     DEF wheel2 HingeJoint {
       jointParameters HingeJointParameters {
-        position -1.4713910090335958e-09
-        anchor -0.06 0 -0.02
+        axis 0 1 0
+        anchor 0 -0.06 -0.02
       }
       device [
         DEF encoder2 PositionSensor {
@@ -124,8 +124,8 @@ DEF robot Robot {
         }
       ]
       endPoint DEF wheel2 Solid {
-        translation -0.06 2.164991583143512e-20 -0.01999999998528609
-        rotation 0 1 0 1.57
+        translation 0 -0.06 -0.02
+        rotation 1 0 0 1.57
         children [
           DEF wheel Shape {
             appearance PBRAppearance {

@@ -8,7 +8,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
-  position 0.0784307402459084 -0.00024761329360881477 4.635929476537779
+  position 0.030941408839431122 6.83720924495335e-06 4.144900355007915
 }
 TexturedBackground {
 }
@@ -22,8 +22,8 @@ DEF robot Robot {
   rotation 0.9998722047246247 0.015986638785114027 3.9993404147973756e-05 0.0012890145081638712
   children [
     DEF ds0 DistanceSensor {
-      translation -0.03 0.09 0
-      rotation 0 0 1 2.17
+      translation 0.09 -0.03 0
+      rotation 0 0 1 -0.45
       children [
         DEF distance_sensor Shape {
           appearance PBRAppearance {
@@ -48,8 +48,8 @@ DEF robot Robot {
       aperture 1
     }
     DEF ds1 DistanceSensor {
-      translation 0.03 0.09 0
-      rotation 0 0 1 0.97
+      translation 0.09 0.03 0
+      rotation 0 0 1 0.45
       children [
         DEF distance_sensor Shape {
           appearance PBRAppearance {
@@ -75,7 +75,7 @@ DEF robot Robot {
     }
     DEF caster BallJoint {
       jointParameters BallJointParameters {
-        anchor 0 0.06 -0.0375
+        anchor 0.06 0 -0.0375
       }
       jointParameters2 JointParameters {
       }
@@ -83,7 +83,7 @@ DEF robot Robot {
         axis 0 1 0
       }
       endPoint DEF caster Solid {
-        translation 0 0.06 -0.0375
+        translation 0.06 0 -0.0375
         children [
           DEF caster Shape {
             appearance PBRAppearance {
@@ -111,7 +111,7 @@ DEF robot Robot {
       }
     }
     DEF Front_frame Solid {
-      translation 0 0.05 0
+      translation 0.05 0 0
       children [
         DEF front_frame Shape {
           appearance PBRAppearance {
@@ -130,8 +130,8 @@ DEF robot Robot {
     }
     DEF wheel1 HingeJoint {
       jointParameters HingeJointParameters {
-        position 1.4762254924643133e-09
-        anchor 0.06 0 -0.02
+        axis 0 1 0
+        anchor 0 0.06 -0.02
       }
       device [
         DEF encoder1 PositionSensor {
@@ -142,8 +142,8 @@ DEF robot Robot {
         }
       ]
       endPoint DEF wheel1 Solid {
-        translation 0.06 2.179241556186644e-20 -0.020000000014762254
-        rotation 7.386635218287681e-10 1 7.380755383563498e-10 1.569999999999999
+        translation 0 0.06 -0.02
+        rotation 1 0 0 1.569999999999999
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -164,8 +164,8 @@ DEF robot Robot {
     }
     DEF wheel2 HingeJoint {
       jointParameters HingeJointParameters {
-        position -1.4713910090335958e-09
-        anchor -0.06 0 -0.02
+        axis 0 1 0
+        anchor 0 -0.06 -0.02
       }
       device [
         DEF encoder2 PositionSensor {
@@ -176,8 +176,8 @@ DEF robot Robot {
         }
       ]
       endPoint DEF wheel2 Solid {
-        translation -0.06 2.164991583143512e-20 -0.01999999998528609
-        rotation -7.362524174072067e-10 1 -7.356663531977414e-10 1.5699999999999987
+        translation 0 -0.06 -0.02
+        rotation 1 0 0 1.5699999999999987
         children [
           DEF wheel Shape {
             appearance PBRAppearance {

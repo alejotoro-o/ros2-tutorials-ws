@@ -47,8 +47,8 @@ class RobotDriver:
         forward_speed = self.__target_twist.linear.x
         angular_speed = self.__target_twist.angular.z
 
-        command_motor_left = -(forward_speed - angular_speed * HALF_DISTANCE_BETWEEN_WHEELS) / WHEEL_RADIUS
-        command_motor_right = -(forward_speed + angular_speed * HALF_DISTANCE_BETWEEN_WHEELS) / WHEEL_RADIUS
+        command_motor_left = (forward_speed + angular_speed * HALF_DISTANCE_BETWEEN_WHEELS) / WHEEL_RADIUS
+        command_motor_right = (forward_speed - angular_speed * HALF_DISTANCE_BETWEEN_WHEELS) / WHEEL_RADIUS
 
         self.__left_motor.setVelocity(command_motor_left)
         self.__right_motor.setVelocity(command_motor_right)
