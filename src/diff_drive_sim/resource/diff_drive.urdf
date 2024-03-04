@@ -55,7 +55,7 @@
     <joint name="motor1" type="continuous">
         <parent link="base_link"/>
         <child link="wheel1"/>
-        <axis xyz="0 0 1"/>
+        <axis xyz="0 0 -1"/>
         <limit effort="10" velocity="10"/>
         <origin xyz="0 0.06 -0.02" rpy="1.57 0 0"/>
     </joint>
@@ -80,7 +80,7 @@
     <joint name="motor2" type="continuous">
         <parent link="base_link"/>
         <child link="wheel2"/>
-        <axis xyz="0 0 1"/>
+        <axis xyz="0 0 -1"/>
         <limit effort="10" velocity="10"/>
         <origin xyz="0 -0.06 -0.02" rpy="1.57 0 0"/>
     </joint>
