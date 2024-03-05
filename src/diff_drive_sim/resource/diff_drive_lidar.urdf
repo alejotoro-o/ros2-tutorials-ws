@@ -67,6 +67,28 @@
         </collision>
     </link>
 
+    <joint name="base_link_to_lidar" type="fixed">
+        <parent link="base_link"/>
+        <child link="lidar"/>
+        <origin xyz="0 0 0.0375" rpy="0 0 0"/>
+    </joint>
+
+    <link name="lidar">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.025" length="0.025"/>
+            </geometry>
+            <material name="gray"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.025" length="0.025"/>
+            </geometry>
+        </collision>
+    </link>
+
     <!-- Wheel 1 -->
     <joint name="motor1" type="continuous">
         <parent link="base_link"/>

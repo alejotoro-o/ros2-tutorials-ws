@@ -8,7 +8,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
-  position 0.25847999416819595 -0.035175628328232 6.960429333455257
+  position 0.006721518947020777 0.006818811519477464 6.758361873652169
 }
 TexturedBackground {
 }
@@ -16,6 +16,95 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorSize 2 2
+}
+DEF obstacle Solid {
+  translation 0 0.6 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.2 0.2 0.15
+      }
+    }
+  ]
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation 0 -0.6 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.2 0.2 0.15
+      }
+    }
+  ]
+  name "solid(1)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation 0.6 -0.3 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.2 0.2 0.15
+      }
+    }
+  ]
+  name "solid(2)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation 0.6 0.3 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.2 0.2 0.15
+      }
+    }
+  ]
+  name "solid(3)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation -0.6 0 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.2 0.2 0.15
+      }
+    }
+  ]
+  name "solid(4)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
 }
 DEF robot Robot {
   translation 0 0 0.05

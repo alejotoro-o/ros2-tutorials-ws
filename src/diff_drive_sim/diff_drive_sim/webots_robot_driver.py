@@ -1,9 +1,7 @@
 import rclpy
-from geometry_msgs.msg import Twist, TransformStamped
+from geometry_msgs.msg import Twist
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
-
-from tf2_ros import TransformBroadcaster
 
 HALF_DISTANCE_BETWEEN_WHEELS = 0.05
 WHEEL_RADIUS = 0.03
@@ -60,7 +58,7 @@ class RobotDriver:
 
         joint_states = JointState()
         joint_states.header = joint_states_header
-        joint_states.name = ['motor1', 'motor2']
+        joint_states.name = ['wheel1', 'wheel2']
         joint_states.position = [
             float(self.__encoder1.getValue()),
             float(self.__encoder2.getValue())
