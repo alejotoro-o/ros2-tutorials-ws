@@ -58,7 +58,7 @@ class RobotDriver:
 
         joint_states = JointState()
         joint_states.header = joint_states_header
-        joint_states.name = ['wheel1', 'wheel2']
+        joint_states.name = ['motor1', 'motor2']
         joint_states.position = [
             float(self.__encoder1.getValue()),
             float(self.__encoder2.getValue())
