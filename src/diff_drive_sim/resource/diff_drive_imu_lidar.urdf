@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+<robot name="robot">
+
+    <webots>
+
+        <device reference="lidar" type="Lidar">
+            <ros>
+                <enabled>True</enabled>
+                <updateRate>10</updateRate>
+                <topicName>/scan</topicName>
+                <alwaysOn>true</alwaysOn>
+                <frameName>lidar</frameName>
+            </ros>
+        </device>
+
+        <plugin type="webots_ros2_driver::Ros2IMU">
+            <enabled>True</enabled>
+            <topicName>/imu/data</topicName>
+            <updateRate>10</updateRate>
+            <alwaysOn>True</alwaysOn>
+            <frameName>imu</frameName>
+            <inertialUnitName>imu</inertialUnitName>
+            <gyroName>gyro</gyroName>
+            <accelerometerName>accelerometer</accelerometerName>
+        </plugin>
+
+        <plugin type="diff_drive_sim.webots_robot_driver.RobotDriver"/>
+        
+    </webots>
+
+    <!-- Colors -->
+    <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+    </material>
+
+    <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+    </material>
+
+    <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+    </material>
+
+    <!-- Robot body -->
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="0.1 0.1 0.05"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.1 0.1 0.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base_link_to_front_frame" type="fixed">
+        <parent link="base_link"/>
+        <child link="front_frame"/>
+        <origin xyz="0.05 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="front_frame">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.05"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base_link_to_lidar" type="fixed">
+        <parent link="base_link"/>
+        <child link="lidar"/>
+        <origin xyz="0 0 0.0375" rpy="0 0 0"/>
+    </joint>
+
+    <link name="lidar">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.025" length="0.025"/>
+            </geometry>
+            <material name="gray"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.025" length="0.025"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base_link_to_imu" type="fixed">
+        <parent link="base_link"/>
+        <child link="imu"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="imu">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+            <material name="gray"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Wheel 1 -->
+    <joint name="motor1" type="continuous">
+        <parent link="base_link"/>
+        <child link="wheel1"/>
+        <axis xyz="0 0 -1"/>
+        <limit effort="10" velocity="10"/>
+        <origin xyz="0 0.06 -0.02" rpy="1.57 0 0"/>
+    </joint>
+
+    <link name="wheel1">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.02"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.02"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Wheel 2 -->
+    <joint name="motor2" type="continuous">
+        <parent link="base_link"/>
+        <child link="wheel2"/>
+        <axis xyz="0 0 -1"/>
+        <limit effort="10" velocity="10"/>
+        <origin xyz="0 -0.06 -0.02" rpy="1.57 0 0"/>
+    </joint>
+
+    <link name="wheel2">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.02"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.02"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Caster Wheel -->
+    <joint name="base_link_to_caster" type="fixed">
+        <parent link="base_link"/>
+        <child link="caster"/>
+        <origin xyz="0.06 0 -0.0375" rpy="0 0 0"/>
+    </joint>
+
+    <link name="caster">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <sphere radius="0.0125"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <sphere radius="0.0125"/>
+            </geometry>
+        </collision>
+    </link>
+
+</robot>

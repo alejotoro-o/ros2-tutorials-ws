@@ -10,7 +10,8 @@ from tf2_ros import TransformBroadcaster
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
-HALF_DISTANCE_BETWEEN_WHEELS = 0.07
+HALF_DISTANCE_BETWEEN_WHEELS = 0.06
+EPSILON = 0.01
 WHEEL_RADIUS = 0.03
 
 class OdometryPublisher(Node):
@@ -49,7 +50,8 @@ class OdometryPublisher(Node):
         self.prev_pos_motor_right = self.joint_states.position[1]
 
         v_x = (WHEEL_RADIUS/2)*(vel_motor_left + vel_motor_right)
-        theta_dot = (WHEEL_RADIUS/(2*HALF_DISTANCE_BETWEEN_WHEELS))*(vel_motor_right - vel_motor_left)
+        #theta_dot = (WHEEL_RADIUS/(2*HALF_DISTANCE_BETWEEN_WHEELS))*(vel_motor_right - vel_motor_left)
+        theta_dot = (WHEEL_RADIUS/(2*(HALF_DISTANCE_BETWEEN_WHEELS + EPSILON)))*(vel_motor_right - vel_motor_left)
 
         return v_x, theta_dot
 
@@ -98,6 +100,11 @@ class OdometryPublisher(Node):
         self.odometry.pose.pose.orientation.y = quat[1]
         self.odometry.pose.pose.orientation.z = quat[2]
         self.odometry.pose.pose.orientation.w = quat[3]
+
+        ## When using Robot Localization Toolbox
+        # self.odometry.pose.covariance[0] = 0.01
+        # self.odometry.pose.covariance[7] = 0.01
+        # self.odometry.pose.covariance[-1] = 0.4
 
         self.odom_publisher.publish(self.odometry)
 

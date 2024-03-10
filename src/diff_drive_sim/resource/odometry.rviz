@@ -81,6 +81,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         lidar:
           Alpha: 1
           Show Axes: false
@@ -117,6 +122,8 @@ Visualization Manager:
           Value: false
         front_frame:
           Value: false
+        imu:
+          Value: false
         lidar:
           Value: false
         odom:
@@ -137,6 +144,8 @@ Visualization Manager:
           caster:
             {}
           front_frame:
+            {}
+          imu:
             {}
           lidar:
             {}
@@ -280,7 +289,7 @@ Visualization Manager:
       Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.733185768127441
+      Yaw: 4.748186111450195
     Saved: ~
 Window Geometry:
   Displays:
@@ -298,5 +307,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 538
-  Y: 0
+  X: 661
+  Y: 33
