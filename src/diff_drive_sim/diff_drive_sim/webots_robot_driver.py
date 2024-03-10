@@ -3,7 +3,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
 
-HALF_DISTANCE_BETWEEN_WHEELS = 0.05
+HALF_DISTANCE_BETWEEN_WHEELS = 0.06
 WHEEL_RADIUS = 0.03
 
 class RobotDriver:

@@ -8,6 +8,8 @@ data_files.append(('share/' + package_name + '/launch', ['launch/robot_launch.py
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_dist_sensors_launch.py']))
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_rviz_launch.py']))
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_lidar_launch.py']))
+data_files.append(('share/' + package_name + '/launch', ['launch/robot_odometry_launch.py']))
+data_files.append(('share/' + package_name + '/launch', ['launch/robot_slam_launch.py']))
 ## World files
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive.wbt']))
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive_dist_sensors.wbt']))
@@ -19,6 +21,9 @@ data_files.append(('share/' + package_name + '/resource', ['resource/diff_drive.
 data_files.append(('share/' + package_name + '/resource', ['resource/diff_drive_lidar.urdf']))
 data_files.append(('share/' + package_name + '/resource', ['resource/urdf_view.rviz']))
 data_files.append(('share/' + package_name + '/resource', ['resource/lidar_scan.rviz']))
+data_files.append(('share/' + package_name + '/resource', ['resource/odometry.rviz']))
+data_files.append(('share/' + package_name + '/resource', ['resource/slam.rviz']))
+data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params.yaml']))
 
 data_files.append(('share/' + package_name, ['package.xml']))
 
@@ -37,8 +42,8 @@ setup(
     entry_points={
         'console_scripts': [
             'robot_driver = diff_drive_sim.webots_robot_driver:main',
-
             'obstacle_avoider = diff_drive_sim.obstacle_avoider:main',
+            'odometry_publisher = diff_drive_sim.odometry_publisher:main'
         ],
     },
 )
