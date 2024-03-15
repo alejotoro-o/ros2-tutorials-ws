@@ -13,7 +13,7 @@ from launch.actions import DeclareLaunchArgument
 def generate_launch_description():
 
     package_dir = get_package_share_directory('diff_drive_sim')
-    robot_description_path = os.path.join(package_dir, 'resource', 'diff_drive_lidar.urdf')
+    robot_description_path = os.path.join(package_dir, 'resource', 'diff_drive_imu_lidar.urdf')
     with open(robot_description_path, 'r') as desc:
         robot_description = desc.read()
         
@@ -41,8 +41,22 @@ def generate_launch_description():
     )
     odometry_publisher = Node(
         package='diff_drive_sim',
-        executable='odometry_publisher'
+        executable='odometry_publisher',
+        remappings=[('/odom', '/wheel/odometry')],
     )
+    ## Sensor Fusion
+    sensor_fusion = Node(
+        package='diff_drive_sim',
+        executable='ekf_node',
+        parameters=[
+            {'model_noise': [0.01,0.0,0.0,
+                             0.0,0.01,0.0,
+                             0.0,0.0,0.8]},
+            {'sensor_noise': 0.001}
+        ],
+        remappings=[('/filtered_odom', '/odom')],
+    )
+
 
     ## RVIZ
     rviz2_config_path = os.path.join(package_dir, 'resource', 'slam.rviz')
@@ -72,7 +86,7 @@ def generate_launch_description():
 
     ## Webots and Robot Nodes
     webots = WebotsLauncher(
-        world=os.path.join(package_dir, 'worlds', 'diff_drive_lidar.wbt'),
+        world=os.path.join(package_dir, 'worlds', 'diff_drive_sensor_fusion.wbt'),
     )
     robot_driver = WebotsController(
         robot_name='robot',
@@ -89,6 +103,7 @@ def generate_launch_description():
         robot_state_publisher,
         joint_state_publisher,
         odometry_publisher,
+        sensor_fusion,
 
         rviz2,
         slam_toolbox,

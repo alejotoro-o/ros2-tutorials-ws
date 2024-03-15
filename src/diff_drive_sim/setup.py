@@ -47,7 +47,8 @@ setup(
         'console_scripts': [
             'robot_driver = diff_drive_sim.webots_robot_driver:main',
             'obstacle_avoider = diff_drive_sim.obstacle_avoider:main',
-            'odometry_publisher = diff_drive_sim.odometry_publisher:main'
+            'odometry_publisher = diff_drive_sim.odometry_publisher:main',
+            'ekf_node = diff_drive_sim.ekf_node:main'
         ],
     },
 )

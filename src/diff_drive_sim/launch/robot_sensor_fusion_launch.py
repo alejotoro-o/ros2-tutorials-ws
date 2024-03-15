@@ -54,15 +54,16 @@ def generate_launch_description():
         arguments=['--display-config=' + rviz2_config_path],
     )
 
-    ## Robot Localization - Sensor Fusion
-    sensor_fusion_config_path = os.path.join(package_dir, 'resource', 'ekf.yaml')
+    ## Sensor Fusion
     sensor_fusion = Node(
-        package='robot_localization',
+        package='diff_drive_sim',
         executable='ekf_node',
-        name='ekf_filter_node',
-        output='screen',
-        parameters=[sensor_fusion_config_path, 
-                    {'use_sim_time': False}]
+        parameters=[
+            {'model_noise': [0.01,0.0,0.0,
+                             0.0,0.01,0.0,
+                             0.0,0.0,0.8]},
+            {'sensor_noise': 0.001}
+        ]
     )
 
     ## Webots and Robot Nodes
