@@ -11,11 +11,13 @@ data_files.append(('share/' + package_name + '/launch', ['launch/robot_lidar_lau
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_odometry_launch.py']))
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_sensor_fusion_launch.py']))
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_slam_launch.py']))
+data_files.append(('share/' + package_name + '/launch', ['launch/robot_navigation_launch.py']))
 ## World files
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive.wbt']))
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive_dist_sensors.wbt']))
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive_lidar.wbt']))
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive_sensor_fusion.wbt']))
+data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive_navigation.wbt']))
 ## Resource files
 data_files.append(('share/' + package_name + '/resource', ['resource/robot.urdf']))
 data_files.append(('share/' + package_name + '/resource', ['resource/robot_dist_sensors.urdf']))
@@ -26,8 +28,9 @@ data_files.append(('share/' + package_name + '/resource', ['resource/urdf_view.r
 data_files.append(('share/' + package_name + '/resource', ['resource/lidar_scan.rviz']))
 data_files.append(('share/' + package_name + '/resource', ['resource/odometry.rviz']))
 data_files.append(('share/' + package_name + '/resource', ['resource/slam.rviz']))
-data_files.append(('share/' + package_name + '/resource', ['resource/ekf.yaml']))
+data_files.append(('share/' + package_name + '/resource', ['resource/navigation.rviz']))
 data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params.yaml']))
+data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params_nav.yaml']))
 
 data_files.append(('share/' + package_name, ['package.xml']))
 

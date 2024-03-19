@@ -1,0 +1,303 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
+  position 0.27970371002280614 0.005363321547656317 5.9798203586028915
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 4 2
+}
+DEF obstacle Solid {
+  translation -1.3 -0.6 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.2 0.2 0.15
+      }
+    }
+  ]
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation -0.78 -0.6 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.2 0.2 0.15
+      }
+    }
+  ]
+  name "solid(3)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation -0.24 -0.6 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.2 0.2 0.15
+      }
+    }
+  ]
+  name "solid(4)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation -0.8 0.3 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.6 0.3 0.15
+      }
+    }
+  ]
+  name "solid(5)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation 0.765 -0.02 0.075
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 1 0.05 0.15
+      }
+    }
+  ]
+  name "solid(1)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF obstacle Solid {
+  translation 0.29 0.5 0.075
+  rotation 0 0 1 -1.5707953071795862
+  children [
+    DEF obstacle Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 1 0.05 0.15
+      }
+    }
+  ]
+  name "solid(2)"
+  boundingObject USE obstacle
+  physics Physics {
+  }
+}
+DEF robot Robot {
+  translation -1.8 -1.07617e-07 0.0500332
+  rotation 0.9998722047246247 0.015986638785114027 3.9993404147973756e-05 0.0012890145081638712
+  children [
+    DEF imu InertialUnit {
+      children [
+        DEF accelerometer Accelerometer {
+        }
+        DEF gyro Gyro {
+        }
+        DEF imu Shape {
+          appearance PBRAppearance {
+            baseColor 0.5 0.5 0.5
+            metalness 0
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "imu"
+      boundingObject USE imu
+      physics Physics {
+      }
+    }
+    DEF lidar Lidar {
+      translation 0 0 0.0375
+      children [
+        DEF lidar Shape {
+          appearance PBRAppearance {
+            baseColor 0.5 0.5 0.5
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.025
+            radius 0.025
+          }
+        }
+      ]
+      boundingObject USE lidar
+      physics Physics {
+      }
+      horizontalResolution 1024
+      fieldOfView 6.28
+      numberOfLayers 1
+      maxRange 2
+    }
+    DEF caster BallJoint {
+      jointParameters BallJointParameters {
+        anchor 0.06 0 -0.0375
+      }
+      jointParameters2 JointParameters {
+      }
+      jointParameters3 JointParameters {
+        axis 0 1 0
+      }
+      endPoint DEF caster Solid {
+        translation 0.06 0 -0.0375
+        children [
+          DEF caster Shape {
+            appearance PBRAppearance {
+              baseColor 0 0 0
+              metalness 0
+            }
+            geometry Sphere {
+              radius 0.0125
+            }
+          }
+        ]
+        name "caster"
+        boundingObject USE caster
+        physics Physics {
+        }
+      }
+    }
+    DEF body Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        metalness 0
+      }
+      geometry Box {
+        size 0.1 0.1 0.05
+      }
+    }
+    DEF Front_frame Solid {
+      translation 0.05 0 0
+      children [
+        DEF front_frame Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.05
+            radius 0.05
+          }
+        }
+      ]
+      boundingObject USE front_frame
+      physics Physics {
+      }
+    }
+    DEF wheel1 HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0 0.06 -0.02
+      }
+      device [
+        DEF encoder1 PositionSensor {
+          name "encoder1"
+        }
+        DEF motor1 RotationalMotor {
+          name "motor1"
+        }
+      ]
+      endPoint DEF wheel1 Solid {
+        translation 0 0.06 -0.02
+        rotation 1 0 0 1.569999999999999
+        children [
+          DEF wheel Shape {
+            appearance PBRAppearance {
+              baseColor 0 0 0
+              metalness 0
+            }
+            geometry Cylinder {
+              height 0.02
+              radius 0.03
+            }
+          }
+        ]
+        name "wheel1"
+        boundingObject USE wheel
+        physics Physics {
+        }
+      }
+    }
+    DEF wheel2 HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0 -0.06 -0.02
+      }
+      device [
+        DEF encoder2 PositionSensor {
+          name "encoder2"
+        }
+        DEF motor2 RotationalMotor {
+          name "motor2"
+        }
+      ]
+      endPoint DEF wheel2 Solid {
+        translation 0 -0.06 -0.02
+        rotation 1 0 0 1.5699999999999987
+        children [
+          DEF wheel Shape {
+            appearance PBRAppearance {
+              baseColor 0 0 0
+              metalness 0
+            }
+            geometry Cylinder {
+              height 0.02
+              radius 0.03
+            }
+          }
+        ]
+        name "wheel2"
+        boundingObject USE wheel
+        physics Physics {
+        }
+      }
+    }
+  ]
+  boundingObject USE body
+  physics Physics {
+  }
+  controller "<extern>"
+}
