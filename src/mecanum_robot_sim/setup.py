@@ -8,6 +8,8 @@ data_files.append(('share/' + package_name, ['package.xml']))
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_launch.py']))
 ## Resource files
 data_files.append(('share/' + package_name + '/resource', ['resource/robot.urdf']))
+data_files.append(('share/' + package_name + '/resource', ['resource/rviz_config.rviz']))
+data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params.yaml']))
 ## World files
 data_files.append(('share/' + package_name + '/worlds', ['worlds/mecanum_robot.wbt']))
 
@@ -25,6 +27,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "odometry_publisher = mecanum_robot_sim.odometry_publisher:main"
         ],
     },
 )

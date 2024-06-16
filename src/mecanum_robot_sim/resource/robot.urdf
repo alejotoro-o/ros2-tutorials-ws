@@ -52,13 +52,13 @@
 	<link name="base_link">
 		<visual>
             <geometry>
-                <box size="0.238 0.1386 0.1345"/>
+                <box size="0.3 0.2 0.1"/>
             </geometry>
             <material name="red"/>
 		</visual>
 		<collision>
             <geometry>
-                <box size="0.238 0.1386 0.1345"/>
+                <box size="0.3 0.2 0.1"/>
             </geometry>
 		</collision>
 	</link>
@@ -73,20 +73,20 @@
 		<child link="wheel1"/>
 		<axis xyz="0 0 -1"/>
 		<limit effort="10" velocity="20"/>
-		<origin xyz="0.08 0 -0.055" rpy="1.57 0.000148 0"/>
+		<origin xyz="0.1 0.12 -0.035" rpy="1.57 0 0"/>
 	</joint>
 	<link name="wheel1">
 		<visual>
-		    <origin xyz="0 0 -0.084" rpy="0 0 0"/>
+		    <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0325" length="0.0304"/>
+                <cylinder radius="0.04" length="0.04"/>
             </geometry>
             <material name="black"/>
 		</visual>
 		<collision>
-            <origin xyz="0 0 -0.084" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0325" length="0.0304"/>
+                <cylinder radius="0.04" length="0.04"/>
             </geometry>
 		</collision>
 	</link>
@@ -97,20 +97,20 @@
 		<child link="wheel2"/>
 		<axis xyz="0 0 -1"/>
 		<limit effort="10" velocity="20"/>
-		<origin xyz="0.08 0 -0.055" rpy="1.57 -0.000151 0"/>
+		<origin xyz="0.1 -0.12 -0.035" rpy="1.57 0 0"/>
 	</joint>
 	<link name="wheel2">
 		<visual>
-            <origin xyz="0 0 0.084" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0325" length="0.0304"/>
+                <cylinder radius="0.04" length="0.04"/>
             </geometry>
             <material name="black"/>
 		</visual>
 		<collision>
-            <origin xyz="0 0 0.084" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0325" length="0.0304"/>
+                <cylinder radius="0.04" length="0.04"/>
             </geometry>
 		</collision>
 	</link>
@@ -121,20 +121,20 @@
 		<child link="wheel3"/>
 		<axis xyz="0 0 -1"/>
 		<limit effort="10" velocity="20"/>
-		<origin xyz="-0.08 0 -0.055" rpy="1.57 0.000157 0"/>
+		<origin xyz="-0.1 0.12 -0.035" rpy="1.57 0 0"/>
 	</joint>
 	<link name="wheel3">
 		<visual>
-            <origin xyz="0 0 -0.084" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0325" length="0.0304"/>
+                <cylinder radius="0.04" length="0.04"/>
             </geometry>
             <material name="black"/>
 		</visual>
 		<collision>
-            <origin xyz="0 0 -0.084" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0325" length="0.0304"/>
+                <cylinder radius="0.04" length="0.04"/>
             </geometry>
 		</collision>
 	</link>
@@ -145,20 +145,20 @@
 		<child link="wheel4"/>
 		<axis xyz="0 0 -1"/>
 		<limit effort="10" velocity="20"/>
-		<origin xyz="-0.08 0 -0.055" rpy="1.57 -0.000157 0"/>
+		<origin xyz="-0.1 -0.12 -0.035" rpy="1.57 0 0"/>
 	</joint>
     <link name="wheel4">
 		<visual>
-            <origin xyz="0 0 0.084" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0325" length="0.0304"/>
+                <cylinder radius="0.04" length="0.04"/>
             </geometry>
             <material name="black"/>
 		</visual>
 		<collision>
-            <origin xyz="0 0 0.084" rpy="0 0 0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0325" length="0.0304"/>
+                <cylinder radius="0.04" length="0.04"/>
             </geometry>
 		</collision>
 	</link>
@@ -171,20 +171,20 @@
 	<joint name="base_link_lidar_joint" type="fixed">
 		<parent link="base_link"/>
 		<child link="lidar"/>
-		<origin xyz="-0.04 0 0.096" rpy="0 0 0"/>
+		<origin xyz="0 0 0.075" rpy="0 0 0"/>
 	</joint>
 	<link name="lidar">
 		<visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.03025" length="0.057"/>
+                <cylinder radius="0.04" length="0.05"/>
             </geometry>
             <material name="gray"/>
 		</visual>
 		<collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.03025" length="0.057"/>
+                <cylinder radius="0.04" length="0.05"/>
             </geometry>
 		</collision>
 	</link>
