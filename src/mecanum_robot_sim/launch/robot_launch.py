@@ -5,6 +5,8 @@ from ament_index_python.packages import get_package_share_directory
 from webots_ros2_driver.webots_launcher import WebotsLauncher
 from webots_ros2_driver.webots_controller import WebotsController
 from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
@@ -71,6 +73,32 @@ def generate_launch_description():
         remappings=[('/odom', '/wheel/odometry')],
     )
 
+    ## Sensor Fusion
+    ekf_params = os.path.join(package_dir, 'resource', 'ekf_params.yaml')
+    ekf_sensor_fusion = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        output='screen',
+        parameters=[ekf_params],
+    )
+
+    ## SLAM
+    toolbox_params = os.path.join(package_dir, 'resource', 'slam_toolbox_params.yaml')
+    slam_toolbox = Node(
+        parameters=[toolbox_params,
+                    {'use_sim_time': True}],
+        package='slam_toolbox',
+        executable='async_slam_toolbox_node',
+        name='slam_toolbox',
+        output='screen'
+    )
+
+    ## Navigation
+    nav2_bringup_path = get_package_share_directory('nav2_bringup')
+    navigation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(nav2_bringup_path, 'launch', 'navigation_launch.py'))
+    )
+
     return LaunchDescription([
         webots,
         robot_driver,
@@ -79,6 +107,9 @@ def generate_launch_description():
         robot_state_publisher,
         joint_state_publisher,
         odometry_publisher,
+        ekf_sensor_fusion,
+        slam_toolbox,
+        navigation,
         launch.actions.RegisterEventHandler(
             event_handler=launch.event_handlers.OnProcessExit(
                 target_action=webots,

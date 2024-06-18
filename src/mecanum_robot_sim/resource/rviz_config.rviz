@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /TF1
         - /LaserScan1/Topic1
       Splitter Ratio: 0.5
     Tree Height: 258
@@ -73,16 +74,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        caster:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        front_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         imu:
           Alpha: 1
           Show Axes: false
@@ -99,6 +90,16 @@ Visualization Manager:
           Show Trail: false
           Value: true
         wheel2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel4:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -119,22 +120,18 @@ Visualization Manager:
         base_footprint:
           Value: false
         base_link:
-          Value: false
-        caster:
-          Value: false
-        front_frame:
-          Value: false
+          Value: true
         imu:
           Value: false
         lidar:
           Value: false
-        map:
-          Value: true
-        odom:
-          Value: true
         wheel1:
           Value: false
         wheel2:
+          Value: false
+        wheel3:
+          Value: false
+        wheel4:
           Value: false
       Marker Scale: 1
       Name: TF
@@ -142,24 +139,21 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        map:
-          {}
-        odom:
-          base_link:
-            base_footprint:
-              {}
-            caster:
-              {}
-            front_frame:
-              {}
-            imu:
-              {}
-            lidar:
-              {}
-            wheel1:
-              {}
-            wheel2:
-              {}
+        base_link:
+          base_footprint:
+            {}
+          imu:
+            {}
+          lidar:
+            {}
+          wheel1:
+            {}
+          wheel2:
+            {}
+          wheel3:
+            {}
+          wheel4:
+            {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -335,5 +329,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1200
-  X: 653
-  Y: 21
+  X: 621
+  Y: -11

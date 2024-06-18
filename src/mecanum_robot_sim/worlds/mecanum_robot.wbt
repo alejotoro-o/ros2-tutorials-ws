@@ -3,6 +3,12 @@
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/RoughConcrete.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/obstacles/protos/OilBarrel.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/factory/pallet/protos/WoodenPalletStack.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/factory/containers/protos/MetalStorageBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/factory/containers/protos/CardboardBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
 
 WorldInfo {
   contactProperties [
@@ -22,7 +28,7 @@ WorldInfo {
       coulombFriction [
         0, 2, 0
       ]
-      frictionRotation -0.785 0
+      frictionRotation 0.785 0
       bounce 0
       forceDependentSlip [
         10, 0
@@ -31,18 +37,21 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
-  position 0.4634932254033156 -0.0011374069053972369 7.163640100263717
+  orientation -0.3766902487932644 0.3785797565435161 0.8454477064842749 1.7329737263266793
+  position 0.4748473698456051 -12.142195273086468 13.67001530622162
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
 }
 RectangleArena {
-  floorSize 5 5
+  floorSize 10 6
+  floorAppearance RoughConcrete {
+  }
+  wallHeight 1
 }
 Robot {
-  translation 0 0 0.075
+  translation -4 0 0.075
   children [
     DEF imu InertialUnit {
       children [
@@ -85,7 +94,7 @@ Robot {
       horizontalResolution 1024
       fieldOfView 6.28
       numberOfLayers 1
-      maxRange 2
+      maxRange 8
     }
     DEF wheel1 HingeJoint {
       jointParameters HingeJointParameters {
@@ -236,9 +245,56 @@ Robot {
       }
     }
   ]
-  contactMaterial "exteriorWheelMat"
   boundingObject USE body
   physics Physics {
   }
   controller "<extern>"
+}
+OilBarrel {
+  translation -4.3 2.31 0.4
+  height 0.8
+  radius 0.3
+}
+OilBarrel {
+  translation -3.48 2.31 0.4
+  name "oil barrel(1)"
+  height 0.8
+  radius 0.3
+}
+OilBarrel {
+  translation -2.6 2.31 0.4
+  name "oil barrel(2)"
+  height 0.8
+  radius 0.3
+}
+WoodenPalletStack {
+  translation -4.05 -2.4 0
+}
+MetalStorageBox {
+  translation -0.908176 2.29077 0
+  rotation 0 0 1 1.57
+}
+CardboardBox {
+  translation -2.59 -1.36 0.3
+}
+CardboardBox {
+  translation -2.59 -0.63 0.3
+  name "cardboard box(1)"
+}
+CardboardBox {
+  translation -1.84 -0.63 0.3
+  name "cardboard box(2)"
+}
+CardboardBox {
+  translation -1.84 -1.35 0.3
+  name "cardboard box(3)"
+}
+Wall {
+  translation 2 1.2 0
+  size 0.1 3.5 1
+}
+Wall {
+  translation 2 -2.35 0
+  name "wall(1)"
+  size 0.1 1.25 1
 }

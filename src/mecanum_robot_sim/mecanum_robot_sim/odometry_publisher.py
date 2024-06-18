@@ -104,7 +104,7 @@ class OdometryPublisher(Node):
         t.transform.rotation.z = quat[2]
         t.transform.rotation.w = quat[3]
 
-        #self.tf_broadcaster.sendTransform(t)
+        self.tf_broadcaster.sendTransform(t)
 
         ## Odometry message
         self.odometry.header.stamp = self.get_clock().now().to_msg()
@@ -123,6 +123,16 @@ class OdometryPublisher(Node):
         self.odometry.twist.twist.linear.x = q_dot[0,0]
         self.odometry.twist.twist.linear.y = q_dot[1,0]
         self.odometry.twist.twist.angular.z = q_dot[2,0]
+
+        ## Covariance
+        ## Position
+        self.odometry.pose.covariance[0] = 0.01
+        self.odometry.pose.covariance[7] = 0.01
+        self.odometry.pose.covariance[14] = 0.1
+        ## Twist
+        self.odometry.pose.covariance[21] = 0.01
+        self.odometry.pose.covariance[28] = 0.01
+        self.odometry.pose.covariance[-1] = 0.01
 
         self.odom_publisher.publish(self.odometry)
 

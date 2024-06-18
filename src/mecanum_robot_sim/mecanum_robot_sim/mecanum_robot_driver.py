@@ -82,7 +82,7 @@ class MecanumRobotDriver:
         self.__front_left_motor.setVelocity(command_motor_front_left) 
         self.__front_right_motor.setVelocity(command_motor_front_right) 
         self.__back_left_motor.setVelocity(command_motor_back_left)
-        self.__back_right_motor.setVelocity(command_motor_back_right) 
+        self.__back_right_motor.setVelocity(command_motor_back_right)
 
         ## Publish joint states
         joint_states_header = Header()
