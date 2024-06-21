@@ -11,6 +11,7 @@ data_files.append(('share/' + package_name + '/resource', ['resource/robot.urdf'
 data_files.append(('share/' + package_name + '/resource', ['resource/rviz_config.rviz']))
 data_files.append(('share/' + package_name + '/resource', ['resource/ekf_params.yaml']))
 data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params.yaml']))
+data_files.append(('share/' + package_name + '/resource', ['resource/cartographer_params.lua']))
 ## World files
 data_files.append(('share/' + package_name + '/worlds', ['worlds/mecanum_robot.wbt']))
 
