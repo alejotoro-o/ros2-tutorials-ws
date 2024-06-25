@@ -13,19 +13,16 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
 
-    use_rviz = LaunchConfiguration('rviz', default=False)
     use_nav = LaunchConfiguration('nav', default=False)
-    use_slam_toolbox = LaunchConfiguration('slam_toolbox', default=False)
-    use_slam_cartographer = LaunchConfiguration('slam_cartographer', default=False)
     
     package_dir = get_package_share_directory('mecanum_robot_sim')
-    robot_description_path = os.path.join(package_dir, 'resource', 'robot.urdf')
+    robot_description_path = os.path.join(package_dir, 'resource', 'robot_camera.urdf')
     with open(robot_description_path, 'r') as desc:
         robot_description = desc.read()
 
     ## Webots Launcher
     webots = WebotsLauncher(
-        world=os.path.join(package_dir, 'worlds', 'mecanum_robot.wbt')
+        world=os.path.join(package_dir, 'worlds', 'mecanum_robot_camera.wbt')
     )
 
     ## Robot Driver
@@ -37,7 +34,7 @@ def generate_launch_description():
     )
 
     ## RVIZ
-    rviz2_config_path = os.path.join(package_dir, 'resource', 'rviz_config.rviz')
+    rviz2_config_path = os.path.join(package_dir, 'resource', 'rviz_camera_config.rviz')
     rviz2 = Node(
         package='rviz2',
         executable='rviz2',
@@ -49,7 +46,6 @@ def generate_launch_description():
                     ('/goal_pose', 'goal_pose'),
                     ('/clicked_point', 'clicked_point'),
                     ('/initialpose', 'initialpose')],
-        condition=launch.conditions.IfCondition(use_rviz)
     )
 
     ## Robot frames and transforms nodes
@@ -82,56 +78,25 @@ def generate_launch_description():
     )
 
     ## Sensor Fusion
-    # ekf_params = os.path.join(package_dir, 'resource', 'ekf_params.yaml')
-    # ekf_sensor_fusion = Node(
-    #     package='robot_localization',
-    #     executable='ekf_node',
-    #     output='screen',
-    #     parameters=[ekf_params],
-    # )
+    ekf_params = os.path.join(package_dir, 'resource', 'ekf_params.yaml')
     ekf_sensor_fusion = Node(
-        package='mecanum_robot_sim',
+        package='robot_localization',
         executable='ekf_node',
-        parameters=[
-            {'model_noise': [0.01,0.0,0.0,
-                             0.0,0.01,0.0,
-                             0.0,0.0,0.6]},
-            {'sensor_noise': 0.001}
-        ]
+        output='screen',
+        parameters=[ekf_params],
     )
 
     ## SLAM
     ## SLAM Toolbox
     toolbox_params = os.path.join(package_dir, 'resource', 'slam_toolbox_params.yaml')
     slam_toolbox = Node(
-        parameters=[toolbox_params],
+        parameters=[toolbox_params,
+                    {'use_sim_time': True}],
         package='slam_toolbox',
         executable='async_slam_toolbox_node',
         name='slam_toolbox',
         output='screen',
-        condition=launch.conditions.IfCondition(use_slam_toolbox)
     )
-    ## Cartographer
-    cartographer_config_dir = os.path.join(package_dir, 'resource')
-    cartographer_config_basename = 'cartographer_params.lua'
-    cartographer = Node(
-        package='cartographer_ros',
-        executable='cartographer_node',
-        name='cartographer_node',
-        output='screen',
-        arguments=['-configuration_directory', cartographer_config_dir,
-                   '-configuration_basename', cartographer_config_basename],
-        condition=launch.conditions.IfCondition(use_slam_cartographer)
-    )
-
-    grid_executable = 'cartographer_occupancy_grid_node'
-    cartographer_grid = Node(
-        package='cartographer_ros',
-        executable=grid_executable,
-        name='cartographer_occupancy_grid_node',
-        output='screen',
-        arguments=['-resolution', '0.05'],
-        condition=launch.conditions.IfCondition(use_slam_cartographer))
 
     ## Navigation
     nav2_bringup_path = get_package_share_directory('nav2_bringup')
@@ -146,9 +111,7 @@ def generate_launch_description():
             rviz2,
             odometry_publisher,
             ekf_sensor_fusion,
-            slam_toolbox,
-            cartographer,
-            cartographer_grid,
+            #slam_toolbox,
             navigation,
         ]
     )

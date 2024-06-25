@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+<robot name="robot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!--#########-->
+    <!-- PLUGINS -->
+    <!--#########-->
+	<webots>
+
+        <plugin type="mecanum_robot_sim.mecanum_robot_driver.MecanumRobotDriver"/>
+
+		<device reference="lidar" type="Lidar">
+            <ros>
+                <enabled>true</enabled>
+                <updateRate>10</updateRate>
+                <topicName>/scan</topicName>
+                <alwaysOn>true</alwaysOn>
+                <frameName>lidar</frameName>
+            </ros>
+        </device>
+
+        <plugin type="webots_ros2_driver::Ros2IMU">
+            <enabled>True</enabled>
+            <topicName>/imu/data</topicName>
+            <updateRate>10</updateRate>
+            <alwaysOn>True</alwaysOn>
+            <frameName>imu</frameName>
+            <inertialUnitName>imu</inertialUnitName>
+            <gyroName>gyro</gyroName>
+            <accelerometerName>accelerometer</accelerometerName>
+        </plugin>
+
+        <device reference="camera" type="Camera">
+            <ros>
+                <enabled>true</enabled>
+                <updateRate>10</updateRate>
+                <topicName>/camera</topicName>
+                <alwaysOn>true</alwaysOn>
+                <frameName>camera</frameName>
+            </ros>
+        </device>
+
+        <device reference="range_finder" type="RangeFinder">
+            <ros>
+                <enabled>true</enabled>
+                <updateRate>10</updateRate>
+                <topicName>/range_finder</topicName>
+                <alwaysOn>true</alwaysOn>
+                <frameName>camera</frameName>
+            </ros>
+        </device>
+
+    </webots>
+
+    <!--########-->
+    <!-- COLORS -->
+    <!--########-->
+    <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+    </material>
+
+    <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+    </material>
+
+    <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+    </material>
+
+    <!--######-->
+    <!-- BODY -->
+    <!--######-->
+	<link name="base_link">
+		<visual>
+            <geometry>
+                <box size="0.3 0.2 0.1"/>
+            </geometry>
+            <material name="red"/>
+		</visual>
+		<collision>
+            <geometry>
+                <box size="0.3 0.2 0.1"/>
+            </geometry>
+		</collision>
+	</link>
+
+    <!--########-->
+    <!-- WHEELS -->
+    <!--########-->
+
+    <!-- Motor 1 -->
+    <joint name="motor1" type="continuous">
+		<parent link="base_link"/>
+		<child link="wheel1"/>
+		<axis xyz="0 0 -1"/>
+		<limit effort="10" velocity="20"/>
+		<origin xyz="0.1 0.12 -0.035" rpy="1.57 0 0"/>
+	</joint>
+	<link name="wheel1">
+		<visual>
+		    <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.04"/>
+            </geometry>
+            <material name="black"/>
+		</visual>
+		<collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.04"/>
+            </geometry>
+		</collision>
+	</link>
+
+    <!-- Motor 2 -->
+	<joint name="motor2" type="continuous">
+		<parent link="base_link"/>
+		<child link="wheel2"/>
+		<axis xyz="0 0 -1"/>
+		<limit effort="10" velocity="20"/>
+		<origin xyz="0.1 -0.12 -0.035" rpy="1.57 0 0"/>
+	</joint>
+	<link name="wheel2">
+		<visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.04"/>
+            </geometry>
+            <material name="black"/>
+		</visual>
+		<collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.04"/>
+            </geometry>
+		</collision>
+	</link>
+
+    <!-- Motor 3 -->
+	<joint name="motor3" type="continuous">
+		<parent link="base_link"/>
+		<child link="wheel3"/>
+		<axis xyz="0 0 -1"/>
+		<limit effort="10" velocity="20"/>
+		<origin xyz="-0.1 0.12 -0.035" rpy="1.57 0 0"/>
+	</joint>
+	<link name="wheel3">
+		<visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.04"/>
+            </geometry>
+            <material name="black"/>
+		</visual>
+		<collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.04"/>
+            </geometry>
+		</collision>
+	</link>
+
+    <!-- Motor 4 -->
+    <joint name="motor4" type="continuous">
+		<parent link="base_link"/>
+		<child link="wheel4"/>
+		<axis xyz="0 0 -1"/>
+		<limit effort="10" velocity="20"/>
+		<origin xyz="-0.1 -0.12 -0.035" rpy="1.57 0 0"/>
+	</joint>
+    <link name="wheel4">
+		<visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.04"/>
+            </geometry>
+            <material name="black"/>
+		</visual>
+		<collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.04"/>
+            </geometry>
+		</collision>
+	</link>
+
+    <!--#########-->
+    <!-- SENSORS -->
+    <!--#########-->
+
+    <!-- Lidar -->
+	<joint name="base_link_lidar_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="lidar"/>
+		<origin xyz="0 0 0.075" rpy="0 0 0"/>
+	</joint>
+	<link name="lidar">
+		<visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.05"/>
+            </geometry>
+            <material name="gray"/>
+		</visual>
+		<collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.05"/>
+            </geometry>
+		</collision>
+	</link>
+
+    <!-- IMU -->
+    <joint name="base_link_to_imu" type="fixed">
+        <parent link="base_link"/>
+        <child link="imu"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    <link name="imu">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+            <material name="gray"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Camera -->
+    <joint name="base_link_to_camera" type="fixed">
+        <parent link="base_link"/>
+        <child link="camera"/>
+        <origin xyz="0.15 0 0" rpy="0 0 0"/>
+    </joint>
+    <link name="camera">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.02 0.1 0.02"/>
+            </geometry>
+            <material name="gray"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.02 0.1 0.02"/>
+            </geometry>
+        </collision>
+    </link>
+</robot>
