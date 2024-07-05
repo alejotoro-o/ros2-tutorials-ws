@@ -13,7 +13,10 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
 
+    use_rviz = LaunchConfiguration('rviz', default=False)
     use_nav = LaunchConfiguration('nav', default=False)
+    use_slam_toolbox = LaunchConfiguration('slam_toolbox', default=False)
+    use_rtabmap = LaunchConfiguration('rtabmap', default=False)
     
     package_dir = get_package_share_directory('mecanum_robot_sim')
     robot_description_path = os.path.join(package_dir, 'resource', 'robot_camera.urdf')
@@ -46,6 +49,7 @@ def generate_launch_description():
                     ('/goal_pose', 'goal_pose'),
                     ('/clicked_point', 'clicked_point'),
                     ('/initialpose', 'initialpose')],
+        condition=launch.conditions.IfCondition(use_rviz)
     )
 
     ## Robot frames and transforms nodes
@@ -78,12 +82,22 @@ def generate_launch_description():
     )
 
     ## Sensor Fusion
-    ekf_params = os.path.join(package_dir, 'resource', 'ekf_params.yaml')
+    # ekf_params = os.path.join(package_dir, 'resource', 'ekf_params.yaml')
+    # ekf_sensor_fusion = Node(
+    #     package='robot_localization',
+    #     executable='ekf_node',
+    #     output='screen',
+    #     parameters=[ekf_params],
+    # )
     ekf_sensor_fusion = Node(
-        package='robot_localization',
+        package='mecanum_robot_sim',
         executable='ekf_node',
-        output='screen',
-        parameters=[ekf_params],
+        parameters=[
+            {'model_noise': [0.01,0.0,0.0,
+                             0.0,0.01,0.0,
+                             0.0,0.0,0.6]},
+            {'sensor_noise': 0.001}
+        ]
     )
 
     ## SLAM
@@ -96,7 +110,26 @@ def generate_launch_description():
         executable='async_slam_toolbox_node',
         name='slam_toolbox',
         output='screen',
+        condition=launch.conditions.IfCondition(use_slam_toolbox)
     )
+
+    ## RTABmap
+    rtabmap_launch_path = get_package_share_directory('rtabmap_launch')
+    rtabmap = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(rtabmap_launch_path, 'launch', 'rtabmap.launch.py')),
+        launch_arguments={
+            "rtabmap_args":"--delete_db_on_start",
+            "frame_id":"base_link",
+            "rgb_topic":"/camera/image_color",
+            "depth_topic":"/range_finder/image",
+            "camera_info_topic":"/camera/camera_info",
+            "approx_sync":"True",
+            "rviz":"False",
+            "visual_odometry":"False",
+            "odom_topic":"/filtered_odom",
+            #"queue_size":"40"
+        }.items(),
+        condition=launch.conditions.IfCondition(use_rtabmap))
 
     ## Navigation
     nav2_bringup_path = get_package_share_directory('nav2_bringup')
@@ -111,7 +144,8 @@ def generate_launch_description():
             rviz2,
             odometry_publisher,
             ekf_sensor_fusion,
-            #slam_toolbox,
+            rtabmap,
+            slam_toolbox,
             navigation,
         ]
     )
