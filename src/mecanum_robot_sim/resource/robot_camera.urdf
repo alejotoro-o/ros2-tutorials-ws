@@ -35,7 +35,7 @@
                 <updateRate>10</updateRate>
                 <topicName>/camera</topicName>
                 <alwaysOn>true</alwaysOn>
-                <frameName>camera</frameName>
+                <frameName>optical_frame</frameName>
             </ros>
         </device>
 
@@ -45,7 +45,7 @@
                 <updateRate>10</updateRate>
                 <topicName>/range_finder</topicName>
                 <alwaysOn>true</alwaysOn>
-                <frameName>camera</frameName>
+                <frameName>optical_frame</frameName>
             </ros>
         </device>
 
@@ -235,7 +235,7 @@
     <joint name="base_link_to_camera" type="fixed">
         <parent link="base_link"/>
         <child link="camera"/>
-        <origin xyz="0.15 0 0" rpy="1.57 3.14 1.57"/>
+        <origin xyz="0.15 0 0" rpy="0 0 0"/>
     </joint>
     <link name="camera">
         <visual>

@@ -59,6 +59,12 @@ def generate_launch_description():
         output='screen',
         arguments=['0', '0', '-0.075', '0', '0', '0', 'base_link', 'base_footprint'],
     )
+    optical_frame_publisher = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        output='screen',
+        arguments=['0', '0', '0', '1.57', '3.14', '1.57', 'camera', 'optical_frame'],
+    )
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -127,7 +133,7 @@ def generate_launch_description():
             "rviz":"False",
             "visual_odometry":"False",
             "odom_topic":"/filtered_odom",
-            #"queue_size":"40"
+            #"queue_size":"20"
         }.items(),
         condition=launch.conditions.IfCondition(use_rtabmap))
 
@@ -154,6 +160,7 @@ def generate_launch_description():
         webots,
         robot_driver,
         footprint_publisher,
+        optical_frame_publisher,
         robot_state_publisher,
         joint_state_publisher,
         waiting_nodes,
