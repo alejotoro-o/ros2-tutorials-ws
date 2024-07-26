@@ -11,6 +11,7 @@ This repository includes multiple examples of ROS2 (Robot Operating System) pack
 - [**srvcli_package:**](src/srvcli_package) example on how to create a service server and client.
 - [**action_package:**](src/action_package) example on how to create an action server an a client, it also includes an advanced example on how to cancel and modify actions.
 - [**diff_drive_sim:**](src/diff_drive_sim) this package includes the simulation of a differential drive robot using the robotics simulator WEBOTS. The package includes multiple applications like SLAM and navigation.
-- [**mecanum_robot_sim:**](src/mecanum_robot_sim) this package includes the simulation of a omnidirectional robot with mecanum wheels using the robotics simulator WEBOTS. The package includes multiple applications like SLAM and navigation. 
+- [**mecanum_robot_sim:**](src/mecanum_robot_sim) this package includes the simulation of a omnidirectional robot with mecanum wheels using the robotics simulator WEBOTS. The package includes multiple applications like SLAM and navigation.
+- [**lifecycle_nodes:**](src/mecanum_robot_sim) this package includes an example on how to use the lifecycle nodes which allow to enable or disable a node using a service.
 
 Complementary material to this repository can be found in my [YouTube Channel](https://youtube.com/playlist?list=PLT81OVhq-1oGK_vuh3fxGKS4t42RWlPXJ&si=C_owJ659ElRTWOvu) (**NOTE**: The videos are in spanish).
