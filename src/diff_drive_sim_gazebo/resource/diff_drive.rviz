@@ -85,7 +85,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: diff_drive/chassis/gpu_lidar
+    Fixed Frame: diff_drive/lidar
     Frame Rate: 30
   Name: root
   Tools:

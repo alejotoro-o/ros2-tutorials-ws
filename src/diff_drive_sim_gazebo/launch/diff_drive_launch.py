@@ -30,12 +30,22 @@ def generate_launch_description():
         executable='parameter_bridge',
         arguments=[
             '/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
-            '/model/vehicle_blue/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+            '/model/diff_drive/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
             '/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan',
+            '/world/diff_drive_world/model/diff_drive/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
+            '/model/diff_drive/pose@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V'
         ],
-        parameters=[{'qos_overrides./model/vehicle_blue.subscriber.reliability': 'reliable',
-                     'qos_overrides./model/vehicle_green.subscriber.reliability': 'reliable'}],
-        output='screen'
+        parameters=[
+                {
+                    'qos_overrides./model/diff_drive.subscriber.reliability': 'reliable',
+                    'qos_overrides./model/diff_drive.subscriber.reliability': 'reliable'
+                }
+            ],
+        output='screen',
+        remappings=[
+            ('/model/diff_drive/pose', '/tf'),
+            ('/world/diff_drive_world/model/diff_drive/joint_state', '/joint_states'),
+        ]
     )
 
     ## RVIZ
