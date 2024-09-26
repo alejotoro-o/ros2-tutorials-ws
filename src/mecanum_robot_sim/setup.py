@@ -7,6 +7,7 @@ data_files.append(('share/' + package_name, ['package.xml']))
 ## Launch Files
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_launch.py']))
 data_files.append(('share/' + package_name + '/launch', ['launch/robot_camera_launch.py']))
+data_files.append(('share/' + package_name + '/launch', ['launch/robot_amcl_launch.py']))
 ## Resource files
 data_files.append(('share/' + package_name + '/resource', ['resource/robot.urdf']))
 data_files.append(('share/' + package_name + '/resource', ['resource/robot_camera.urdf']))
@@ -15,6 +16,10 @@ data_files.append(('share/' + package_name + '/resource', ['resource/rviz_camera
 data_files.append(('share/' + package_name + '/resource', ['resource/ekf_params.yaml']))
 data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params.yaml']))
 data_files.append(('share/' + package_name + '/resource', ['resource/cartographer_params.lua']))
+data_files.append(('share/' + package_name + '/resource', ['resource/map.yaml']))
+data_files.append(('share/' + package_name + '/resource', ['resource/map.pgm']))
+data_files.append(('share/' + package_name + '/resource', ['resource/amcl_params.yaml']))
+data_files.append(('share/' + package_name + '/resource', ['resource/rviz_amcl_config.rviz']))
 ## World files
 data_files.append(('share/' + package_name + '/worlds', ['worlds/mecanum_robot.wbt']))
 data_files.append(('share/' + package_name + '/worlds', ['worlds/mecanum_robot_camera.wbt']))

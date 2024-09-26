@@ -57,7 +57,7 @@ def generate_launch_description():
         package='tf2_ros',
         executable='static_transform_publisher',
         output='screen',
-        arguments=['0', '0', '-0.075', '0', '0', '0', 'base_link', 'base_footprint'],
+        arguments=['0', '0', '0.075', '0', '0', '0', 'base_footprint', 'base_link'],
     )
     optical_frame_publisher = Node(
         package='tf2_ros',
@@ -125,7 +125,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(os.path.join(rtabmap_launch_path, 'launch', 'rtabmap.launch.py')),
         launch_arguments={
             "rtabmap_args":"--delete_db_on_start",
-            "frame_id":"base_link",
+            "frame_id":"base_footprint",
             "rgb_topic":"/camera/image_color",
             "depth_topic":"/range_finder/image",
             "camera_info_topic":"/camera/camera_info",

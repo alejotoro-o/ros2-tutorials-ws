@@ -6,17 +6,9 @@ from webots_ros2_driver.webots_launcher import WebotsLauncher
 from webots_ros2_driver.webots_controller import WebotsController
 from webots_ros2_driver.wait_for_controller_connection import WaitForControllerConnection
 from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
-
-    use_rviz = LaunchConfiguration('rviz', default=False)
-    use_nav = LaunchConfiguration('nav', default=False)
-    use_slam_toolbox = LaunchConfiguration('slam_toolbox', default=False)
-    use_slam_cartographer = LaunchConfiguration('slam_cartographer', default=False)
     
     package_dir = get_package_share_directory('mecanum_robot_sim')
     robot_description_path = os.path.join(package_dir, 'resource', 'robot.urdf')
@@ -37,7 +29,7 @@ def generate_launch_description():
     )
 
     ## RVIZ
-    rviz2_config_path = os.path.join(package_dir, 'resource', 'rviz_config.rviz')
+    rviz2_config_path = os.path.join(package_dir, 'resource', 'rviz_amcl_config.rviz')
     rviz2 = Node(
         package='rviz2',
         executable='rviz2',
@@ -49,7 +41,6 @@ def generate_launch_description():
                     ('/goal_pose', 'goal_pose'),
                     ('/clicked_point', 'clicked_point'),
                     ('/initialpose', 'initialpose')],
-        condition=launch.conditions.IfCondition(use_rviz)
     )
 
     ## Robot frames and transforms nodes
@@ -82,13 +73,6 @@ def generate_launch_description():
     )
 
     ## Sensor Fusion
-    # ekf_params = os.path.join(package_dir, 'resource', 'ekf_params.yaml')
-    # ekf_sensor_fusion = Node(
-    #     package='robot_localization',
-    #     executable='ekf_node',
-    #     output='screen',
-    #     parameters=[ekf_params],
-    # )
     ekf_sensor_fusion = Node(
         package='mecanum_robot_sim',
         executable='ekf_node',
@@ -100,44 +84,39 @@ def generate_launch_description():
         ]
     )
 
-    ## SLAM
-    ## SLAM Toolbox
-    toolbox_params = os.path.join(package_dir, 'resource', 'slam_toolbox_params.yaml')
-    slam_toolbox = Node(
-        parameters=[toolbox_params],
-        package='slam_toolbox',
-        executable='async_slam_toolbox_node',
-        name='slam_toolbox',
+    ## Navigation Map Server and AMCL
+    map_file_path = os.path.join(package_dir, 'resource', 'map.yaml')
+    map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
         output='screen',
-        condition=launch.conditions.IfCondition(use_slam_toolbox)
-    )
-    ## Cartographer
-    cartographer_config_dir = os.path.join(package_dir, 'resource')
-    cartographer_config_basename = 'cartographer_params.lua'
-    cartographer = Node(
-        package='cartographer_ros',
-        executable='cartographer_node',
-        name='cartographer_node',
-        output='screen',
-        arguments=['-configuration_directory', cartographer_config_dir,
-                   '-configuration_basename', cartographer_config_basename],
-        condition=launch.conditions.IfCondition(use_slam_cartographer)
+        parameters=[{'yaml_filename': map_file_path}]
     )
 
-    grid_executable = 'cartographer_occupancy_grid_node'
-    cartographer_grid = Node(
-        package='cartographer_ros',
-        executable=grid_executable,
-        name='cartographer_occupancy_grid_node',
+    amcl_params = os.path.join(package_dir, 'resource', 'amcl_params.yaml')
+    amcl = Node(
+        package='nav2_amcl',
+        executable='amcl',
+        name='amcl',
         output='screen',
-        arguments=['-resolution', '0.05'],
-        condition=launch.conditions.IfCondition(use_slam_cartographer))
+        respawn=True,
+        respawn_delay=2.0,
+        parameters=[amcl_params],
+    )
 
-    ## Navigation
-    nav2_bringup_path = get_package_share_directory('nav2_bringup')
-    navigation = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(nav2_bringup_path, 'launch', 'navigation_launch.py')),
-        condition=launch.conditions.IfCondition(use_nav))
+    lifecycle_nodes = ['map_server', 'amcl']
+    lifecycle_manager = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager',
+        output='screen',
+        emulate_tty=True,  # https://github.com/ros2/launch/issues/188
+        parameters=[
+            {'autostart': True},
+            {'node_names': lifecycle_nodes}
+        ]
+    )
+
     
     ## Wait for controller before launching nodes
     waiting_nodes = WaitForControllerConnection(
@@ -146,10 +125,9 @@ def generate_launch_description():
             rviz2,
             odometry_publisher,
             ekf_sensor_fusion,
-            slam_toolbox,
-            cartographer,
-            cartographer_grid,
-            navigation,
+            map_server,
+            amcl,
+            lifecycle_manager
         ]
     )
 

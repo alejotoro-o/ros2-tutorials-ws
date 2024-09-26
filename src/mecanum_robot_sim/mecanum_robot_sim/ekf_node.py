@@ -93,7 +93,7 @@ class EKFNode(Node):
 
         t.header.stamp = self.get_clock().now().to_msg()
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_link'
+        t.child_frame_id = 'base_footprint'
 
         t.transform.translation.x = self.q[0,0]
         t.transform.translation.y = self.q[1,0]
@@ -112,7 +112,7 @@ class EKFNode(Node):
         self.filtered_odometry.header.stamp = self.get_clock().now().to_msg()
         self.filtered_odometry.header.frame_id = 'odom'
 
-        self.filtered_odometry.child_frame_id = 'base_link'
+        self.filtered_odometry.child_frame_id = 'base_footprint'
         self.filtered_odometry.pose.pose.position.x = self.q[0,0]
         self.filtered_odometry.pose.pose.position.y = self.q[1,0]
         self.filtered_odometry.pose.pose.position.z = 0.0
