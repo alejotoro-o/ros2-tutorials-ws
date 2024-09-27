@@ -2,6 +2,10 @@
 <sdf version="1.8">
     <world name="diff_drive_world">
 
+        <scene>
+            <grid>false</grid>
+        </scene>
+
         <physics name="1ms" type="ignored">
             <max_step_size>0.001</max_step_size>
             <real_time_factor>1.0</real_time_factor>
@@ -41,28 +45,117 @@
         </light>
 
         <!-- MODELS -->
-        <model name="ground_plane">
+        <model name="arena">
             <static>true</static>
-            <link name="link">
+            <link name="floor">
                 <collision name="collision">
-                <geometry>
-                    <plane>
-                    <normal>0 0 1</normal>
-                    </plane>
-                </geometry>
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                        </plane>
+                    </geometry>
                 </collision>
                 <visual name="visual">
-                <geometry>
-                    <plane>
-                    <normal>0 0 1</normal>
-                    <size>5 5</size>
-                    </plane>
-                </geometry>
-                <material>
-                    <ambient>0.8 0.8 0.8 1</ambient>
-                    <diffuse>0.8 0.8 0.8 1</diffuse>
-                    <specular>0.8 0.8 0.8 1</specular>
-                </material>
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>5 5</size>
+                        </plane>
+                    </geometry>
+                    <material>
+                        <ambient>0.8 0.8 0.8 1</ambient>
+                        <diffuse>0.8 0.8 0.8 1</diffuse>
+                        <specular>0.8 0.8 0.8 1</specular>
+                    </material>
+                </visual>
+            </link>
+
+            <link name="w1">
+                <pose relative_to="floor">0 2.5 0.25 0 0 0</pose>
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>5 0.02 0.5</size>
+                        </box>
+                    </geometry>
+                </collision>
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>5 0.02 0.5</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <ambient>0.8 0.8 0.8 1</ambient>
+                        <diffuse>0.8 0.8 0.8 1</diffuse>
+                        <specular>0.8 0.8 0.8 1</specular>
+                    </material>
+                </visual>
+            </link>
+            <link name="w2">
+                <pose relative_to="floor">0 -2.5 0.25 0 0 0</pose>
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>5 0.02 0.5</size>
+                        </box>
+                    </geometry>
+                </collision>
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>5 0.02 0.5</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <ambient>0.8 0.8 0.8 1</ambient>
+                        <diffuse>0.8 0.8 0.8 1</diffuse>
+                        <specular>0.8 0.8 0.8 1</specular>
+                    </material>
+                </visual>
+            </link>
+            <link name="w3">
+                <pose relative_to="floor">2.5 0 0.25 0 0 0</pose>
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>0.02 5 0.5</size>
+                        </box>
+                    </geometry>
+                </collision>
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>0.02 5 0.5</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <ambient>0.8 0.8 0.8 1</ambient>
+                        <diffuse>0.8 0.8 0.8 1</diffuse>
+                        <specular>0.8 0.8 0.8 1</specular>
+                    </material>
+                </visual>
+            </link>
+            <link name="w4">
+                <pose relative_to="floor">-2.5 0 0.25 0 0 0</pose>
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>0.02 5 0.5</size>
+                        </box>
+                    </geometry>
+                </collision>
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>0.02 5 0.5</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <ambient>0.8 0.8 0.8 1</ambient>
+                        <diffuse>0.8 0.8 0.8 1</diffuse>
+                        <specular>0.8 0.8 0.8 1</specular>
+                    </material>
                 </visual>
             </link>
         </model>
