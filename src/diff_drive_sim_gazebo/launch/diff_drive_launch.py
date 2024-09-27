@@ -40,7 +40,7 @@ def generate_launch_description():
                     'qos_overrides./model/diff_drive.subscriber.reliability': 'reliable',
                     'qos_overrides./model/diff_drive.subscriber.reliability': 'reliable'
                 }
-            ],
+        ],
         output='screen',
         remappings=[
             ('/model/diff_drive/pose', '/tf'),
@@ -59,8 +59,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         gz_sim,
-        DeclareLaunchArgument('rviz', default_value='true',
-                              description='Open RViz.'),
         bridge,
         rviz
     ])
