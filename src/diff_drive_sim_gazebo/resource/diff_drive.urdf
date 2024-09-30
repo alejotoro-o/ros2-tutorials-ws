@@ -1,0 +1,303 @@
+<?xml version="1.0" ?>
+<robot name="diff_drive">
+
+    <gazebo>
+        <plugin
+            filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
+            <left_joint>motor1</left_joint>
+            <right_joint>motor2</right_joint>
+            <wheel_separation>0.1</wheel_separation>
+            <wheel_radius>0.03</wheel_radius>
+            <odom_publish_frequency>1</odom_publish_frequency>
+            <topic>cmd_vel</topic>
+        </plugin>
+
+        <plugin
+            filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
+        </plugin>
+
+        <plugin
+            filename="ignition-gazebo-pose-publisher-system"
+            name="ignition::gazebo::systems::PosePublisher">
+            <publish_link_pose>true</publish_link_pose>
+
+            <use_pose_vector_msg>true</use_pose_vector_msg>
+        </plugin>
+    </gazebo>
+
+    <gazebo reference="base_link">
+        <visual>
+            <material>
+                <ambient>1.0 0.0 0.0 1</ambient>
+                <diffuse>1.0 0.0 0.0 1</diffuse>
+                <specular>1.0 0.0 0.0 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    <gazebo reference="front_frame">
+        <visual>
+            <material>
+                <ambient>1.0 0.0 0.0 1</ambient>
+                <diffuse>1.0 0.0 0.0 1</diffuse>
+                <specular>1.0 0.0 0.0 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    <gazebo reference="lidar">
+        <sensor name='gpu_lidar' type='gpu_lidar'>"
+            <pose relative_to='lidar'>0 0 0 0 0 0</pose>
+            <ignition_frame_id>lidar</ignition_frame_id>
+            <topic>scan</topic>
+            <update_rate>10</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>640</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-3.14</min_angle>
+                        <max_angle>3.14</max_angle>
+                    </horizontal>
+                    <vertical>
+                        <samples>1</samples>
+                        <resolution>0.01</resolution>
+                        <min_angle>0</min_angle>
+                        <max_angle>0</max_angle>
+                    </vertical>
+                </scan>
+                <range>
+                    <min>0.08</min>
+                    <max>10.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+            </ray>
+            <always_on>1</always_on>
+            <visualize>true</visualize>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="wheel1">
+        <visual>
+            <material>
+                <ambient>0.0 0.0 0.0 1</ambient>
+                <diffuse>0.0 0.0 0.0 1</diffuse>
+                <specular>0.0 0.0 0.0 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+    
+    <gazebo reference="wheel2">
+        <visual>
+            <material>
+                <ambient>0.0 0.0 0.0 1</ambient>
+                <diffuse>0.0 0.0 0.0 1</diffuse>
+                <specular>0.0 0.0 0.0 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    <!-- Colors Rviz -->
+    <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+    </material>
+
+    <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+    </material>
+
+    <!-- Robot body -->
+    <link name="base_link">
+        <inertial>
+            <mass value="1.14395"/>
+            <inertia
+                ixx="0.095329"
+                ixy="0"
+                ixz="0"
+                iyy="0.381317"
+                iyz="0"
+                izz="0.476646"/>
+        </inertial>
+        <visual>
+            <geometry>
+                <box size="0.1 0.1 0.05"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.1 0.1 0.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base_link_to_front_frame" type="fixed">
+        <parent link="base_link"/>
+        <child link="front_frame"/>
+        <origin xyz="0.05 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="front_frame">
+        <inertial>
+            <mass value="1.14395"/>
+            <inertia
+                ixx="0.095329"
+                ixy="0"
+                ixz="0"
+                iyy="0.381317"
+                iyz="0"
+                izz="0.476646"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.05"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base_link_to_lidar" type="fixed">
+        <parent link="base_link"/>
+        <child link="lidar"/>
+        <origin xyz="0 0 0.0375" rpy="0 0 0"/>
+    </joint>
+
+    <link name="lidar">
+        <inertial>
+            <mass value="0.5"/>
+            <inertia
+                ixx="0.000104"
+                ixy="0"
+                ixz="0"
+                iyy="0.000104"
+                iyz="0"
+                izz="0.000156"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.025" length="0.025"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.025" length="0.025"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Wheel 1 -->
+    <joint name="motor1" type="continuous">
+        <parent link="base_link"/>
+        <child link="wheel1"/>
+        <axis xyz="0 0 -1"/>
+        <limit effort="10" velocity="10"/>
+        <origin xyz="0 0.06 -0.02" rpy="1.57 0 0"/>
+    </joint>
+
+    <link name="wheel1">
+        <inertial>
+            <mass value="0.5"/>
+            <inertia
+                ixx="0.000129"
+                ixy="0"
+                ixz="0"
+                iyy="0.000129"
+                iyz="0"
+                izz="0.000225"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.02"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.02"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Wheel 2 -->
+    <joint name="motor2" type="continuous">
+        <parent link="base_link"/>
+        <child link="wheel2"/>
+        <axis xyz="0 0 -1"/>
+        <limit effort="10" velocity="10"/>
+        <origin xyz="0 -0.06 -0.02" rpy="1.57 0 0"/>
+    </joint>
+
+    <link name="wheel2">
+        <inertial>
+            <mass value="0.5"/>
+            <inertia
+                ixx="0.000129"
+                ixy="0"
+                ixz="0"
+                iyy="0.000129"
+                iyz="0"
+                izz="0.000225"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.02"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="0.02"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Caster Wheel -->
+    <joint name="base_link_to_caster" type="fixed">
+        <parent link="base_link"/>
+        <child link="caster"/>
+        <origin xyz="0.06 0 -0.0375" rpy="0 0 0"/>
+    </joint>
+
+    <link name="caster">
+        <inertial>
+            <mass value="0.5"/>
+            <inertia
+                ixx="0.000031"
+                ixy="0"
+                ixz="0"
+                iyy="0.000031"
+                iyz="0"
+                izz="0.000031"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <sphere radius="0.0125"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <sphere radius="0.0125"/>
+            </geometry>
+        </collision>
+    </link>
+
+</robot>

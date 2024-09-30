@@ -6,10 +6,14 @@ data_files.append(('share/ament_index/resource_index/packages', ['resource/' + p
 data_files.append(('share/' + package_name, ['package.xml']))
 ## Worlds
 data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive.sdf']))
+data_files.append(('share/' + package_name + '/worlds', ['worlds/diff_drive_empty.sdf']))
 ## Launch
 data_files.append(('share/' + package_name + '/launch', ['launch/diff_drive_launch.py']))
+data_files.append(('share/' + package_name + '/launch', ['launch/diff_drive_urdf_launch.py']))
 ## Resource
 data_files.append(('share/' + package_name + '/resource', ['resource/diff_drive.rviz']))
+data_files.append(('share/' + package_name + '/resource', ['resource/diff_drive_urdf.rviz']))
+data_files.append(('share/' + package_name + '/resource', ['resource/diff_drive.urdf']))
 
 setup(
     name=package_name,
