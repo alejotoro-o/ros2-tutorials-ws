@@ -14,12 +14,15 @@ data_files.append(('share/' + package_name + '/meshes', ['meshes/back_right_whee
 data_files.append(('share/' + package_name + '/meshes', ['meshes/back_left_wheel_X3.STL']))
 ## Worlds
 data_files.append(('share/' + package_name + '/worlds', ['worlds/rosmasterx3.wbt']))
+data_files.append(('share/' + package_name + '/worlds', ['worlds/multi_robot.wbt']))
 ## Launch
 data_files.append(('share/' + package_name + '/launch', ['launch/rosmaster_launch.py']))
+data_files.append(('share/' + package_name + '/launch', ['launch/multi_robot_launch.py']))
 ## Resource
 data_files.append(('share/' + package_name + '/resource', ['resource/rosmasterx3.urdf']))
 data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params.yaml']))
 data_files.append(('share/' + package_name + '/resource', ['resource/rviz_config.rviz']))
+data_files.append(('share/' + package_name + '/resource', ['resource/rosmasterx3_multi_robot.urdf']))
 
 setup(
     name=package_name,
@@ -35,6 +38,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "leader_follower_controller = rosmasterx3_sim.leader_follower_controller:main"
         ],
     },
 )

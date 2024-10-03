@@ -4,14 +4,6 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/Marble.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/cabinet/protos/Cabinet.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Radiator.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/living_room_furniture/protos/Sofa.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/tables/protos/Table.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/television/protos/Television.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/tables/protos/Desk.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/chairs/protos/OfficeChair.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/telephone/protos/OfficeTelephone.proto"
 
 WorldInfo {
   contactProperties [
@@ -40,8 +32,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.33129012851260164 0.338407504174276 0.8807537748250878 1.6763293573291707
-  position 0.2956102478923144 -8.67441268177916 7.378846838511099
+  orientation -0.3398387666230725 0.3402653509507745 0.8767719792753731 1.7006917393024483
+  position 0.3377959275519896 -8.052113840998393 7.43476764598012
 }
 TexturedBackground {
 }
@@ -53,8 +45,8 @@ RectangleArena {
   }
   wallHeight 1
 }
-DEF robot Robot {
-  translation 0 0 0.0715
+DEF robot1 Robot {
+  translation 0 0.5 0.0715
   children [
     DEF camera Camera {
       translation 0.0571 0 0.03755
@@ -288,37 +280,252 @@ DEF robot Robot {
       }
     }
   ]
+  name "robot1"
   boundingObject USE body
   physics Physics {
   }
   controller "<extern>"
   supervisor TRUE
 }
-Cabinet {
-  translation -2.93 -1.04 0
-}
-Radiator {
-  translation 2.89 0 0.3
-}
-Sofa {
-  translation -0.00183158 2.3 0
-  rotation 0 0 1 -1.57
-}
-Table {
-  translation -0.00187941 -2.36 0
-  rotation 0 0 1 1.57
-}
-Television {
-  translation -0.000159264 -2.27 1.06
-  rotation 0 0 1 1.57
-}
-Desk {
-  translation -2.6 0.48 0
-}
-OfficeChair {
-  translation -1.90919 0.513039 0
-  rotation 0 0 1 3.14
-}
-OfficeTelephone {
-  translation -2.43 0.4 0.71
+DEF robot2 Robot {
+  translation 0 -0.5 0.0715
+  children [
+    DEF camera Camera {
+      translation 0.0571 0 0.03755
+      children [
+        DEF range_finder RangeFinder {
+          name "range_finder"
+          width 720
+          height 480
+          maxRange 8
+        }
+        DEF camera Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 0
+            metalness 0
+          }
+          geometry DEF camera Mesh {
+            url [
+              "//wsl.localhost/Ubuntu/home/alejandro/ros2_tutorials_ws/src/rosmasterx3_sim//meshes/camera_link.STL"
+            ]
+          }
+        }
+      ]
+      boundingObject USE camera
+      physics Physics {
+      }
+      width 720
+      height 480
+    }
+    DEF imu InertialUnit {
+      translation -0.06 0.01 0.005
+      children [
+        Accelerometer {
+        }
+        Gyro {
+        }
+        DEF imu Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 0
+            metalness 0
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "imu"
+      boundingObject USE imu
+      physics Physics {
+      }
+    }
+    DEF lidar Lidar {
+      translation 0.0435 0 0.11
+      children [
+        DEF lidar Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 0
+            metalness 0
+          }
+          geometry DEF lidar Mesh {
+            url [
+              "//wsl.localhost/Ubuntu/home/alejandro/ros2_tutorials_ws/src/rosmasterx3_sim//meshes/laser_link.STL"
+            ]
+          }
+        }
+      ]
+      boundingObject USE lidar
+      physics Physics {
+      }
+      horizontalResolution 1024
+      fieldOfView 6.28
+      numberOfLayers 1
+      near 0.05
+      minRange 0.05
+      maxRange 8
+    }
+    DEF front_left_wheel HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0.08 0.0845 -0.0389
+      }
+      device [
+        DEF encoder1 PositionSensor {
+          name "encoder1"
+        }
+        DEF motor1 RotationalMotor {
+          name "motor1"
+        }
+      ]
+      endPoint Solid {
+        translation 0.08 0.0845 -0.0389
+        rotation 1 0 0 1.57
+        children [
+          DEF front_left_wheel Shape {
+            appearance PBRAppearance {
+              baseColor 0 0 0
+              metalness 0
+            }
+            geometry DEF front_left_wheel Mesh {
+              url [
+                "//wsl.localhost/Ubuntu/home/alejandro/ros2_tutorials_ws/src/rosmasterx3_sim//meshes/front_left_wheel_X3.STL"
+              ]
+            }
+          }
+        ]
+        contactMaterial "exteriorWheelMat"
+        boundingObject DEF wheel Cylinder {
+          height 0.03
+          radius 0.0325
+        }
+        physics Physics {
+        }
+      }
+    }
+    DEF front_right_wheel HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0.08 -0.0845 -0.0389
+      }
+      device [
+        DEF encoder2 PositionSensor {
+          name "encoder2"
+        }
+        DEF motor2 RotationalMotor {
+          name "motor2"
+        }
+      ]
+      endPoint Solid {
+        translation 0.08 -0.0845 -0.0389
+        rotation 1 0 0 1.57
+        children [
+          DEF front_right_wheel Shape {
+            appearance PBRAppearance {
+              baseColor 0 0 0
+              metalness 0
+            }
+            geometry DEF front_right_wheel Mesh {
+              url [
+                "//wsl.localhost/Ubuntu/home/alejandro/ros2_tutorials_ws/src/rosmasterx3_sim//meshes/front_right_wheel_X3.STL"
+              ]
+            }
+          }
+        ]
+        name "solid(1)"
+        contactMaterial "interiorWheelMat"
+        boundingObject USE wheel
+        physics Physics {
+        }
+      }
+    }
+    DEF back_left_wheel HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor -0.08 0.0845 -0.0389
+      }
+      device [
+        DEF encoder3 PositionSensor {
+          name "encoder3"
+        }
+        DEF motor3 RotationalMotor {
+          name "motor3"
+        }
+      ]
+      endPoint Solid {
+        translation -0.08 0.0845 -0.0389
+        rotation 1 0 0 1.57
+        children [
+          DEF back_left_wheel Shape {
+            appearance PBRAppearance {
+              baseColor 0 0 0
+              metalness 0
+            }
+            geometry DEF back_left_wheel Mesh {
+              url [
+                "//wsl.localhost/Ubuntu/home/alejandro/ros2_tutorials_ws/src/rosmasterx3_sim//meshes/back_left_wheel_X3.STL"
+              ]
+            }
+          }
+        ]
+        name "solid(2)"
+        contactMaterial "interiorWheelMat"
+        boundingObject USE wheel
+        physics Physics {
+        }
+      }
+    }
+    DEF back_right_wheel HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor -0.08 -0.0845 -0.0389
+      }
+      device [
+        DEF encoder4 PositionSensor {
+          name "encoder4"
+        }
+        DEF motor4 RotationalMotor {
+          name "motor4"
+        }
+      ]
+      endPoint Solid {
+        translation -0.08 -0.0845 -0.0389
+        rotation 1 0 0 1.57
+        children [
+          DEF back_right_wheel Shape {
+            appearance PBRAppearance {
+              baseColor 0 0 0
+              metalness 0
+            }
+            geometry DEF back_right_wheel Mesh {
+              url [
+                "//wsl.localhost/Ubuntu/home/alejandro/ros2_tutorials_ws/src/rosmasterx3_sim//meshes/back_right_wheel_X3.STL"
+              ]
+            }
+          }
+        ]
+        name "solid(3)"
+        contactMaterial "exteriorWheelMat"
+        boundingObject USE wheel
+        physics Physics {
+        }
+      }
+    }
+    DEF body Shape {
+      appearance PBRAppearance {
+        baseColor 0.7 0 0
+        metalness 0
+      }
+      geometry DEF body Mesh {
+        url [
+          "//wsl.localhost/Ubuntu/home/alejandro/ros2_tutorials_ws/src/rosmasterx3_sim/meshes/base_link_X3_mod.STL"
+        ]
+      }
+    }
+  ]
+  name "robot2"
+  boundingObject USE body
+  physics Physics {
+  }
+  controller "<extern>"
+  supervisor TRUE
 }
