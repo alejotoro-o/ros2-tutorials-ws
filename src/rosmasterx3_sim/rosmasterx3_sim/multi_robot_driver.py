@@ -140,7 +140,7 @@ class MultiRobotDriver:
         odometry_msg = Odometry()
 
         odometry_msg.header.frame_id = 'odom'
-        odometry_msg.child_frame_id = 'base_footprint'
+        odometry_msg.child_frame_id = self.robot_name + '/base_footprint'
         odometry_msg.header.stamp = self.__node.get_clock().now().to_msg()
 
         odometry_msg.pose.pose.position.x = trans[0]
@@ -159,7 +159,7 @@ class MultiRobotDriver:
 
         t.header.stamp = self.__node.get_clock().now().to_msg()
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_footprint'
+        t.child_frame_id = self.robot_name + '/base_footprint'
 
         t.transform.translation.x = trans[0]
         t.transform.translation.y = trans[1]

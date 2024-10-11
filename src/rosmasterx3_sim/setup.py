@@ -18,11 +18,13 @@ data_files.append(('share/' + package_name + '/worlds', ['worlds/multi_robot.wbt
 ## Launch
 data_files.append(('share/' + package_name + '/launch', ['launch/rosmaster_launch.py']))
 data_files.append(('share/' + package_name + '/launch', ['launch/multi_robot_launch.py']))
+data_files.append(('share/' + package_name + '/launch', ['launch/mrs_launch.py']))
 ## Resource
 data_files.append(('share/' + package_name + '/resource', ['resource/rosmasterx3.urdf']))
 data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params.yaml']))
 data_files.append(('share/' + package_name + '/resource', ['resource/rviz_config.rviz']))
 data_files.append(('share/' + package_name + '/resource', ['resource/rosmasterx3_multi_robot.urdf']))
+data_files.append(('share/' + package_name + '/resource', ['resource/rviz_mrs_config.rviz']))
 
 setup(
     name=package_name,
