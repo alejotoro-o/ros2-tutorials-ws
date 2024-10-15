@@ -78,6 +78,9 @@ class LeaderFollowerController(Node):
 
     def __control_callback(self):
 
+        self.theta_f_goal = self.q1[2]
+        self.theta_f_goal = ((self.theta_f_goal + np.pi)%(2*np.pi)) - np.pi
+
         d = np.sqrt((self.q1[0] - self.q2[0])**2 + (self.q1[1] - self.q2[1])**2)
         alpha = self.q2[2] - np.arctan2((self.q1[1] - self.q2[1]), (self.q1[0] - self.q2[0]))
         alpha = ((alpha + np.pi)%(2*np.pi)) - np.pi ## NEW: Normalize alpha angle
@@ -105,7 +108,7 @@ class LeaderFollowerController(Node):
             theta_error += 2*np.pi
         p_d = np.array([[-self.K[0]*(d - self.d_goal)],
                         [-self.K[1]*(alpha_error)],
-                        [-self.K[2]*(theta_error)]]) 
+                        [self.u_l[2,0]-self.K[2]*(theta_error)]]) 
     
 
         self.u_f = np.dot(np.linalg.inv(B), (np.dot(A, self.u_l) - p_d))
