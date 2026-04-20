@@ -145,7 +145,7 @@ class MultiRobotDriver:
 
         odometry_msg.pose.pose.position.x = trans[0]
         odometry_msg.pose.pose.position.y = trans[1]
-        odometry_msg.pose.pose.position.z = trans[2]
+        odometry_msg.pose.pose.position.z = 0.0 # trans[2]
 
         odometry_msg.pose.pose.orientation.w = r.as_quat()[3]
         odometry_msg.pose.pose.orientation.x = r.as_quat()[0]
@@ -163,7 +163,7 @@ class MultiRobotDriver:
 
         t.transform.translation.x = trans[0]
         t.transform.translation.y = trans[1]
-        t.transform.translation.z = trans[2]
+        t.transform.translation.z = 0.0 # trans[2]
 
         t.transform.rotation.x = r.as_quat()[0]
         t.transform.rotation.y = r.as_quat()[1]
