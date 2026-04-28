@@ -6,9 +6,13 @@ from ament_index_python.packages import get_package_share_directory
 from webots_ros2_driver.webots_launcher import WebotsLauncher
 from webots_ros2_driver.webots_controller import WebotsController
 from webots_ros2_driver.wait_for_controller_connection import WaitForControllerConnection
-from launch_ros.actions import Node
+from launch_ros.actions import Node, LifecycleNode
 from launch.substitutions.path_join_substitution import PathJoinSubstitution
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, RegisterEventHandler, EmitEvent, LogInfo
+from launch.events import Shutdown, matches_action
+from launch_ros.event_handlers import OnStateTransition
+from launch_ros.events.lifecycle import ChangeState
+from lifecycle_msgs.msg import Transition
 
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.substitutions import FindPackageShare
@@ -81,14 +85,42 @@ def generate_launch_description():
     ## SLAM
     ## SLAM Toolbox
     toolbox_params = os.path.join(package_dir, 'resource', 'slam_toolbox_params.yaml')
-    slam_toolbox = Node(
-        parameters=[toolbox_params,
-                    {'use_sim_time': True}],
+    start_async_slam_toolbox_node = LifecycleNode(
         package='slam_toolbox',
         executable='async_slam_toolbox_node',
         name='slam_toolbox',
+        namespace='',
         output='screen',
-        condition=launch.conditions.IfCondition(use_slam_toolbox)
+        parameters=[
+            toolbox_params,
+            {
+                'use_sim_time': True,
+            }
+        ],
+    )
+
+    # Automatically Transition: Unconfigured -> Inactive (Configure)
+    slam_configure_event = EmitEvent(
+        event=ChangeState(
+            lifecycle_node_matcher=matches_action(start_async_slam_toolbox_node),
+            transition_id=Transition.TRANSITION_CONFIGURE
+        ),
+    )
+
+    # Automatically Transition: Inactive -> Active (Activate)
+    slam_activate_event = RegisterEventHandler(
+        OnStateTransition(
+            target_lifecycle_node=start_async_slam_toolbox_node,
+            start_state="configuring",
+            goal_state="inactive",
+            entities=[
+                LogInfo(msg="[LifecycleLaunch] Slamtoolbox node is activating."),
+                EmitEvent(event=ChangeState(
+                    lifecycle_node_matcher=matches_action(start_async_slam_toolbox_node),
+                    transition_id=Transition.TRANSITION_ACTIVATE
+                ))
+            ]
+        ),
     )
 
     ## RTABmap
@@ -123,7 +155,9 @@ def generate_launch_description():
         nodes_to_start=[
             rviz2,
             rtabmap,
-            slam_toolbox,
+            start_async_slam_toolbox_node,
+            slam_configure_event,
+            slam_activate_event,
             navigation,
         ]
     )

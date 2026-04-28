@@ -17,6 +17,8 @@
   <exec_depend>nav2_bringup</exec_depend>
   <exec_depend>navigation2</exec_depend>
   <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>cartographer_ros</exec_depend>
+  <exec_depend>cartographer</exec_depend>
   <exec_depend>rtabmap_ros</exec_depend>
 
   <test_depend>ament_copyright</test_depend>

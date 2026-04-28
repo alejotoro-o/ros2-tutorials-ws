@@ -6,9 +6,14 @@ from webots_ros2_driver.webots_launcher import WebotsLauncher
 from webots_ros2_driver.webots_controller import WebotsController
 from webots_ros2_driver.wait_for_controller_connection import WaitForControllerConnection
 from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler, EmitEvent, LogInfo
+from launch.events import Shutdown, matches_action
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node, LifecycleNode
+from launch_ros.event_handlers import OnStateTransition
+from launch_ros.events.lifecycle import ChangeState
+from lifecycle_msgs.msg import Transition
 
 
 def generate_launch_description():
@@ -103,14 +108,44 @@ def generate_launch_description():
     ## SLAM
     ## SLAM Toolbox
     toolbox_params = os.path.join(package_dir, 'resource', 'slam_toolbox_params.yaml')
-    slam_toolbox = Node(
-        parameters=[toolbox_params],
+    start_async_slam_toolbox_node = LifecycleNode(
         package='slam_toolbox',
         executable='async_slam_toolbox_node',
         name='slam_toolbox',
+        namespace='',
         output='screen',
-        condition=launch.conditions.IfCondition(use_slam_toolbox)
+        parameters=[
+            toolbox_params,
+            {
+                'use_sim_time': True,
+            }
+        ],
     )
+
+    # Automatically Transition: Unconfigured -> Inactive (Configure)
+    slam_configure_event = EmitEvent(
+        event=ChangeState(
+            lifecycle_node_matcher=matches_action(start_async_slam_toolbox_node),
+            transition_id=Transition.TRANSITION_CONFIGURE
+        ),
+    )
+
+    # Automatically Transition: Inactive -> Active (Activate)
+    slam_activate_event = RegisterEventHandler(
+        OnStateTransition(
+            target_lifecycle_node=start_async_slam_toolbox_node,
+            start_state="configuring",
+            goal_state="inactive",
+            entities=[
+                LogInfo(msg="[LifecycleLaunch] Slamtoolbox node is activating."),
+                EmitEvent(event=ChangeState(
+                    lifecycle_node_matcher=matches_action(start_async_slam_toolbox_node),
+                    transition_id=Transition.TRANSITION_ACTIVATE
+                ))
+            ]
+        ),
+    )
+
     ## Cartographer
     cartographer_config_dir = os.path.join(package_dir, 'resource')
     cartographer_config_basename = 'cartographer_params.lua'
@@ -146,7 +181,9 @@ def generate_launch_description():
             rviz2,
             odometry_publisher,
             ekf_sensor_fusion,
-            slam_toolbox,
+            start_async_slam_toolbox_node,
+            slam_configure_event,
+            slam_activate_event,
             cartographer,
             cartographer_grid,
             navigation,
