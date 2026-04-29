@@ -24,6 +24,7 @@ data_files.append(('share/' + package_name + '/resource', ['resource/rosmasterx3
 data_files.append(('share/' + package_name + '/resource', ['resource/slam_toolbox_params.yaml']))
 data_files.append(('share/' + package_name + '/resource', ['resource/rviz_config.rviz']))
 data_files.append(('share/' + package_name + '/resource', ['resource/rosmasterx3_multi_robot.urdf']))
+data_files.append(('share/' + package_name + '/resource', ['resource/rosmasterx3_multi_robot.urdf.xacro']))
 data_files.append(('share/' + package_name + '/resource', ['resource/rviz_mrs_config.rviz']))
 
 setup(

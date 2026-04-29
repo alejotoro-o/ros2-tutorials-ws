@@ -1,5 +1,6 @@
 import os
 import launch
+import xacro
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
@@ -8,6 +9,7 @@ from webots_ros2_driver.webots_controller import WebotsController
 from launch_ros.actions import Node
 from launch.substitutions.path_join_substitution import PathJoinSubstitution
 from launch.actions import DeclareLaunchArgument
+from webots_ros2_driver.wait_for_controller_connection import WaitForControllerConnection
 
 
 def generate_launch_description():
@@ -19,9 +21,7 @@ def generate_launch_description():
     nodes = []
 
     package_dir = get_package_share_directory('rosmasterx3_sim')
-    robot_description_path = os.path.join(package_dir, 'resource', 'rosmasterx3_multi_robot.urdf')
-    with open(robot_description_path, 'r') as desc:
-        robot_description = desc.read()
+    robot_description_path = os.path.join(package_dir, 'resource', 'rosmasterx3_multi_robot.urdf.xacro')
 
     nodes.append(DeclareLaunchArgument(
             'world',
@@ -57,16 +57,18 @@ def generate_launch_description():
                     ('/clicked_point', 'clicked_point'),
                     ('/initialpose', 'initialpose')],
     )
-    nodes.append(rviz2)
 
     for i in range(1, num_robots + 1):
 
         robot_namespace = "robot" + str(i)
 
+        # process xacro per-robot, injecting the namespace into link/joint names
+        robot_description = xacro.process_file(robot_description_path, mappings={"robot_name": robot_namespace}).toxml()
+
         robot_driver = WebotsController(
             robot_name=robot_namespace,
             parameters=[
-                {'robot_description': robot_description_path},
+                {'robot_description': robot_description},
             ],
             namespace=robot_namespace
         )
@@ -76,8 +78,7 @@ def generate_launch_description():
             executable='robot_state_publisher',
             output='screen',
             parameters=[{
-                'robot_description': robot_description,
-                'frame_prefix': robot_namespace + "/"
+                'robot_description': robot_description
             }],
             arguments=[robot_description_path],
             namespace=robot_namespace,
@@ -120,7 +121,16 @@ def generate_launch_description():
         ]
     )
 
-    nodes.append(leader_follower_controller)
+    ## Wait for controller before launching nodes
+    waiting_nodes = WaitForControllerConnection(
+        target_driver=robot_driver,
+        nodes_to_start=[
+            rviz2,
+            leader_follower_controller
+        ]
+    )
+
+    nodes.append(waiting_nodes)
 
     nodes.append(launch.actions.RegisterEventHandler(
         event_handler=launch.event_handlers.OnProcessExit(

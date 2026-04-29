@@ -120,6 +120,7 @@ def generate_launch_description():
                 'use_sim_time': True,
             }
         ],
+        condition=launch.conditions.IfCondition(use_slam_toolbox)
     )
 
     # Automatically Transition: Unconfigured -> Inactive (Configure)
@@ -128,6 +129,7 @@ def generate_launch_description():
             lifecycle_node_matcher=matches_action(start_async_slam_toolbox_node),
             transition_id=Transition.TRANSITION_CONFIGURE
         ),
+        condition=launch.conditions.IfCondition(use_slam_toolbox)
     )
 
     # Automatically Transition: Inactive -> Active (Activate)
@@ -144,6 +146,7 @@ def generate_launch_description():
                 ))
             ]
         ),
+        condition=launch.conditions.IfCondition(use_slam_toolbox)
     )
 
     ## Cartographer
