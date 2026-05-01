@@ -16,6 +16,10 @@ This repository includes multiple examples of ROS2 (Robot Operating System) pack
 - [**lifecycle_nodes:**](src/mecanum_robot_sim) this package includes an example on how to use the lifecycle nodes which allow to enable or disable a node using a service.
 - [**rosmasterx3_sim:**](src/rosmasterx3_sim) this package includes the simulation of a Yahboom ROSMASTER X3 omnidirectional robot with mecanum wheels using the robotics simulator WEBOTS. The package includes multiple applications like SLAM, navigation and multirobot systems.
 
+## Generate ROS Map Scripts
+
+The scrips in [`generate_ros_map`](generate_ros_map) folder allow you to convert any map into a black-and-white binary file. They also enable you to generate the `.pgm` and `.yaml` files required by packages such as `slam_toolbox`.
+
 ## WSL Configuration:
 
 If you are using Windows with WSL, you may need to make some modifications to the network configuration. This applies if you see the following log when running simulations:
