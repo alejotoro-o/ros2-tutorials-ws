@@ -1,0 +1,391 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+    <world name="simple_world">
+        <scene>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <background>0.9 0.9 0.9 1</background>
+            <shadows>false</shadows>
+        </scene>
+        <physics name="1ms" type="ignored">
+            <max_step_size>0.001</max_step_size>
+            <real_time_factor>1.0</real_time_factor>
+        </physics>
+        <plugin filename="ignition-gazebo-physics-system"
+        name="ignition::gazebo::systems::Physics"/>
+        <plugin filename="ignition-gazebo-user-commands-system"
+        name="ignition::gazebo::systems::UserCommands"/>
+        <plugin filename="ignition-gazebo-scene-broadcaster-system"
+        name="ignition::gazebo::systems::SceneBroadcaster"/>
+        <light type="directional" name="sun">
+            <cast_shadows>false</cast_shadows>
+            <pose>0 0 10 0 0 0</pose>
+            <diffuse>1.0 1.0 1.0 1</diffuse>
+            <specular>0.3 0.3 0.3 1</specular>
+            <direction>-0.5 0.5 -1.0</direction>  
+        </light>
+        <model name="ground_plane">
+            <static>true</static>
+            <link name="link">
+                <collision name="collision">
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                        </plane>
+                    </geometry>
+                    <surface>
+                        <friction>
+                            <ode>
+                                <mu>1.0</mu>
+                                <mu2>0.25</mu2>
+                                <slip1>0.0</slip1>
+                                <slip2>0.05</slip2>
+                            </ode>
+                        </friction>
+                        <contact>
+                            <ode>
+                                <kp>1000000.0</kp>
+                                <kd>10.0</kd>
+                                <min_depth>0.001</min_depth>
+                                <max_vel>0.1</max_vel>
+                            </ode>
+                        </contact>
+                    </surface>
+                </collision>
+                <visual name="visual">
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>100 100</size>
+                        </plane>
+                    </geometry>
+                    <material>
+                        <ambient>0.9 0.9 0.9 1</ambient>
+                        <diffuse>0.9 0.9 0.9 1</diffuse>
+                        <specular>0.1 0.1 0.1 1</specular>
+                    </material>
+                </visual>
+            </link>
+        </model>
+        <!-- Caja en el Espacio -->        
+        <model name="box_obstacle">
+            <pose>2 0 0.25 0 0 0</pose>
+            <static>true</static>
+            <link name="link">
+                <collision name="collision">
+                <geometry>
+                    <box>
+                    <size>0.5 0.5 0.5</size>
+                    </box>
+                </geometry>
+                </collision>
+                <visual name="visual">
+                <geometry>
+                    <box>
+                    <size>0.5 0.5 0.5</size>
+                    </box>
+                </geometry>
+                <material>
+                    <ambient>0.8 0.2 0.2 1</ambient>
+                    <diffuse>0.9 0.2 0.2 1</diffuse>
+                </material>
+                </visual>
+            </link>
+        </model>
+        <!-- Robot diferencial (diff_drive) -->
+        <model name="diff_drive_robot">
+            <pose>0 0 0.12 0 0 0</pose>
+            <!-- Chasis -->
+            <link name="chassis">
+                <inertial>
+                    <mass>2.0</mass>
+                    <inertia>
+                        <ixx>0.0228</ixx>
+                        <ixy>0.0</ixy>
+                        <ixz>0.0</ixz>
+                        <iyy>0.0624</iyy>
+                        <iyz>0.0</iyz>
+                        <izz>0.0804</izz>
+                    </inertia>
+                </inertial>
+                <collision name="col">
+                    <geometry>
+                        <box>
+                            <size>0.6 0.35 0.12</size>
+                        </box>
+                    </geometry>
+                </collision>
+                <visual name="vis">
+                    <geometry>
+                        <box>
+                            <size>0.6 0.35 0.12</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <ambient>0.0 0.7 0.2 1</ambient>
+                        <diffuse>0.0 0.9 0.2 1</diffuse>
+                        <specular>0.2 0.2 0.2 1</specular>
+                    </material>
+                </visual>
+            </link>
+            <!-- Rueda delantera izquierda -->
+            <link name="left_front_wheel">
+                <pose>0.18 0.20 0 -1.5707 0 0</pose>
+                <inertial>
+                    <mass>0.2</mass>
+                    <inertia>
+                        <ixx>0.00054</ixx>
+                        <ixy>0.0</ixy>
+                        <ixz>0.0</ixz>
+                        <iyy>0.00054</iyy>
+                        <iyz>0.0</iyz>
+                        <izz>0.00100</izz>
+                    </inertia>
+                </inertial>
+                <collision name="col">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.1</radius>
+                            <length>0.05</length>
+                        </cylinder>
+                    </geometry>
+                    <surface>
+                        <friction>
+                            <ode>
+                                <mu>1.0</mu>
+                                <mu2>0.25</mu2>
+                                <slip1>0.0</slip1>
+                                <slip2>0.05</slip2>
+                            </ode>
+                        </friction>
+                        <contact>
+                            <ode>
+                                <kp>1000000.0</kp>
+                                <kd>10.0</kd>
+                                <min_depth>0.001</min_depth>
+                                <max_vel>0.1</max_vel>
+                            </ode>
+                        </contact>
+                    </surface>
+                </collision>
+                <visual name="vis">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.1</radius>
+                            <length>0.05</length>
+                        </cylinder>
+                    </geometry>
+                    <material>
+                        <ambient>0.05 0.05 0.05 1</ambient>
+                        <diffuse>0.02 0.02 0.02 1</diffuse>
+                        <specular>0.4 0.4 0.4 1</specular>
+                    </material>
+                </visual>
+            </link>
+            <!-- Rueda trasera izquierda -->
+            <link name="left_rear_wheel">
+                <pose>-0.18 0.20 0 -1.5707 0 0</pose>
+                <inertial>
+                    <mass>0.2</mass>
+                    <inertia>
+                        <ixx>0.00054</ixx>
+                        <ixy>0.0</ixy>
+                        <ixz>0.0</ixz>
+                        <iyy>0.00054</iyy>
+                        <iyz>0.0</iyz>
+                        <izz>0.00100</izz>
+                    </inertia>
+                </inertial>
+                <collision name="col">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.1</radius>
+                            <length>0.05</length>
+                        </cylinder>
+                    </geometry>
+                    <surface>
+                        <friction>
+                            <ode>
+                                <mu>1.0</mu>
+                                <mu2>0.25</mu2>
+                                <slip1>0.0</slip1>
+                                <slip2>0.05</slip2>
+                            </ode>
+                        </friction>
+                        <contact>
+                            <ode>
+                                <kp>1000000.0</kp>
+                                <kd>10.0</kd>
+                                <min_depth>0.001</min_depth>
+                                <max_vel>0.1</max_vel>
+                            </ode>
+                        </contact>
+                    </surface>
+                </collision>
+                <visual name="vis">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.1</radius>
+                            <length>0.05</length>
+                        </cylinder>
+                    </geometry>
+                    <material>
+                        <ambient>0.05 0.05 0.05 1</ambient>
+                        <diffuse>0.02 0.02 0.02 1</diffuse>
+                        <specular>0.4 0.4 0.4 1</specular>
+                    </material>
+                </visual>
+            </link>
+            <!-- Rueda delantera derecha -->
+            <link name="right_front_wheel">
+                <pose>0.18 -0.20 0 -1.5707 0 0</pose>
+                <inertial>
+                    <mass>0.2</mass>
+                    <inertia>
+                        <ixx>0.00054</ixx>
+                        <ixy>0.0</ixy>
+                        <ixz>0.0</ixz>
+                        <iyy>0.00054</iyy>
+                        <iyz>0.0</iyz>
+                        <izz>0.00100</izz>
+                    </inertia>
+                </inertial>
+                <collision name="col">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.1</radius>
+                            <length>0.05</length>
+                        </cylinder>
+                    </geometry>
+                    <surface>
+                        <friction>
+                            <ode>
+                                <mu>1.0</mu>
+                                <mu2>0.25</mu2>
+                                <slip1>0.0</slip1>
+                                <slip2>0.05</slip2>
+                            </ode>
+                        </friction>
+                        <contact>
+                            <ode>
+                                <kp>1000000.0</kp>
+                                <kd>10.0</kd>
+                                <min_depth>0.001</min_depth>
+                                <max_vel>0.1</max_vel>
+                            </ode>
+                        </contact>
+                    </surface>
+                </collision>
+                <visual name="vis">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.1</radius>
+                            <length>0.05</length>
+                        </cylinder>
+                    </geometry>
+                    <material>
+                        <ambient>0.05 0.05 0.05 1</ambient>
+                        <diffuse>0.02 0.02 0.02 1</diffuse>
+                        <specular>0.4 0.4 0.4 1</specular>
+                    </material>
+                </visual>
+            </link>
+            <!-- Rueda trasera derecha -->
+            <link name="right_rear_wheel">
+                <pose>-0.18 -0.20 0 -1.5707 0 0</pose>
+                <inertial>
+                    <mass>0.2</mass>
+                    <inertia>
+                        <ixx>0.00054</ixx>
+                        <ixy>0.0</ixy>
+                        <ixz>0.0</ixz>
+                        <iyy>0.00054</iyy>
+                        <iyz>0.0</iyz>
+                        <izz>0.00100</izz>
+                    </inertia>
+                </inertial>
+                <collision name="col">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.1</radius>
+                            <length>0.05</length>
+                        </cylinder>
+                    </geometry>
+                    <surface>
+                        <friction>
+                            <ode>
+                                <mu>1.0</mu>
+                                <mu2>0.25</mu2>
+                                <slip1>0.0</slip1>
+                                <slip2>0.05</slip2>
+                            </ode>
+                        </friction>
+                        <contact>
+                            <ode>
+                                <kp>1000000.0</kp>
+                                <kd>10.0</kd>
+                                <min_depth>0.001</min_depth>
+                                <max_vel>0.1</max_vel>
+                            </ode>
+                        </contact>
+                    </surface>
+                </collision>
+                <visual name="vis">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.1</radius>
+                            <length>0.05</length>
+                        </cylinder>
+                    </geometry>
+                    <material>
+                        <ambient>0.05 0.05 0.05 1</ambient>
+                        <diffuse>0.02 0.02 0.02 1</diffuse>
+                        <specular>0.4 0.4 0.4 1</specular>
+                    </material>
+                </visual>
+            </link>
+            <!-- Joints izquierdos -->
+            <joint name="left_front_wheel_joint" type="revolute">
+                <parent>chassis</parent>
+                <child>left_front_wheel</child>
+                <axis>
+                    <xyz>0 0 1</xyz>
+                </axis>
+            </joint>
+            <joint name="left_rear_wheel_joint" type="revolute">
+                <parent>chassis</parent>
+                <child>left_rear_wheel</child>
+                <axis>
+                    <xyz>0 0 1</xyz>
+                </axis>
+            </joint>
+            <!-- Joints derechos -->
+            <joint name="right_front_wheel_joint" type="revolute">
+                <parent>chassis</parent>
+                <child>right_front_wheel</child>
+                <axis>
+                    <xyz>0 0 1</xyz>
+                </axis>
+            </joint>
+            <joint name="right_rear_wheel_joint" type="revolute">
+                <parent>chassis</parent>
+                <child>right_rear_wheel</child>
+                <axis>
+                    <xyz>0 0 1</xyz>
+                </axis>
+            </joint>
+            <!-- Plugin DiffDrive para 4 ruedas -->
+            <plugin filename="ignition-gazebo-diff-drive-system" name="ignition::gazebo::systems::DiffDrive">
+                <left_joint>left_front_wheel_joint</left_joint>
+                <left_joint>left_rear_wheel_joint</left_joint>
+                <right_joint>right_front_wheel_joint</right_joint>
+                <right_joint>right_rear_wheel_joint</right_joint>
+                <wheel_separation>0.40</wheel_separation>
+                <wheel_radius>0.1</wheel_radius>
+                <topic>cmd_vel</topic>
+                <odom_topic>odom</odom_topic>
+                <frame_id>odom</frame_id>
+                <child_frame_id>base_link</child_frame_id>
+            </plugin>
+        </model>
+    </world>
+</sdf>
