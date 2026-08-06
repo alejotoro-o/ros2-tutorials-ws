@@ -1,0 +1,49 @@
+x-common-volumes: &common-volumes
+  volumes:
+    - ./src:/home/ros2/ros2_ws/src:rw
+    - ./generate_ros_map:/home/ros2/ros2_ws/generate_ros_map:ro
+
+x-gui-volumes: &gui-volumes
+  volumes:
+    - ./src:/home/ros2/ros2_ws/src:rw
+    - ./generate_ros_map:/home/ros2/ros2_ws/generate_ros_map:ro
+    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+x-x11-env: &x11-env
+  environment:
+    - DISPLAY=${DISPLAY}
+    - QT_X11_NO_MITSHM=1
+    - LIBGL_ALWAYS_SOFTWARE=1
+
+x-gpu-env: &gpu-env
+  environment:
+    - DISPLAY=${DISPLAY}
+    - QT_X11_NO_MITSHM=1
+
+services:
+  ros2-tutorials:
+    build: .
+    image: ros2-tutorials:jazzy
+    stdin_open: true
+    tty: true
+    <<: *common-volumes
+
+  # Gazebo GUI + Rviz2 (requires X11 server on host: xhost +local:docker)
+  ros2-tutorials-gui:
+    extends: ros2-tutorials
+    profiles: [gui]
+    <<: [*gui-volumes, *x11-env]
+
+  # Webots (requires X11 server on host: xhost +local:docker)
+  # Uses host networking so WebotsLauncher <-> WebotsController TCP works.
+  # GPU acceleration via /dev/dri (Intel/AMD). For NVIDIA, install nvidia-container-toolkit.
+  ros2-tutorials-webots:
+    extends: ros2-tutorials
+    profiles: [webots]
+    network_mode: host
+    <<: *gpu-env
+    volumes:
+      - ./src:/home/ros2/ros2_ws/src:rw
+      - ./generate_ros_map:/home/ros2/ros2_ws/generate_ros_map:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /dev/dri:/dev/dri:rw
