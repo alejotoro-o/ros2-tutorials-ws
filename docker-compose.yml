@@ -23,7 +23,7 @@ x-gpu-env: &gpu-env
 services:
   ros2-tutorials:
     build: .
-    image: ros2-tutorials:jazzy
+    image: alejotoroo/ros2-tutorials:latest
     stdin_open: true
     tty: true
     <<: *common-volumes

@@ -108,6 +108,122 @@ nameserver "Insert the IP address copied in step 2"
 
 **IMPORTANT:** Verify in **Windows Firewall settings** that Webots has permission through both private and public networks.
 
+## Docker
+
+A pre-built Docker image is available with the full workspace and all dependencies (ROS2 Jazzy, Gazebo Harmonic, Webots R2025a) pre-installed. No ROS2 setup required on the host.
+
+> **Requirements:** [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+
+### Pull from Docker Hub
+
+```bash
+docker pull alejotoroo/ros2-tutorials:latest
+```
+
+### Build from source
+
+```bash
+git clone https://github.com/alejotoro-o/ros2-tutorials-ws.git
+cd ros2-tutorials-ws
+docker compose build          # initial build (~15 min)
+docker compose build --no-cache  # force full rebuild if needed
+```
+
+### Available profiles
+
+| Profile | Service | Description |
+|---------|---------|-------------|
+| (default) | `ros2-tutorials` | Core nodes, Gazebo headless |
+| `gui` | `ros2-tutorials-gui` | Gazebo GUI + Rviz2 |
+| `webots` | `ros2-tutorials-webots` | Webots simulation |
+
+### X11 setup (GUI apps)
+
+If you plan to use Gazebo GUI, Rviz2, or Webots, allow Docker to access your X11 server:
+
+```bash
+xhost +local:docker
+```
+
+### Launch examples
+
+**Core packages (default profile):**
+
+```bash
+# Interactive shell with workspace sourced
+docker compose run --rm ros2-tutorials bash
+
+# Run a node
+docker compose run --rm ros2-tutorials ros2 run pubsub_package publisher
+
+# Run tests
+docker compose run --rm ros2-tutorials colcon test --packages-select pubsub_package
+```
+
+**Gazebo headless (default profile):**
+
+```bash
+docker compose run --rm ros2-tutorials \
+  ros2 launch gps_sim_gazebo spawn_ugv_explorer.launch.py gui:=false
+```
+
+**Gazebo GUI + Rviz2 (`gui` profile):**
+
+```bash
+docker compose --profile gui run --rm ros2-tutorials-gui \
+  ros2 launch diff_drive_sim_gazebo diff_drive_launch.py
+```
+
+**Webots simulation (`webots` profile):**
+
+```bash
+docker compose --profile webots run --rm ros2-tutorials-webots \
+  ros2 launch diff_drive_sim robot_launch.py
+
+docker compose --profile webots run --rm ros2-tutorials-webots \
+  ros2 launch mecanum_robot_sim robot_launch.py
+
+docker compose --profile webots run --rm ros2-tutorials-webots \
+  ros2 launch rosmasterx3_sim rosmaster_launch.py
+```
+
+### Opening a second terminal
+
+To run commands like `teleop_twist_keyboard` alongside a simulation, you need to join the same running container from another terminal.
+
+**Option A — `docker compose up` (recommended for multi-terminal use):**
+
+```bash
+# Terminal 1: start the service interactively
+docker compose --profile webots up ros2-tutorials-webots
+
+# From the shell that opens, launch your simulation:
+ros2 launch diff_drive_sim robot_launch.py
+
+# Terminal 2: join the same container
+docker compose --profile webots exec ros2-tutorials-webots bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+**Option B — find and join a running container:**
+
+```bash
+# Terminal 1: launch simulation
+docker compose --profile webots run --rm ros2-tutorials-webots bash
+ros2 launch diff_drive_sim robot_launch.py
+
+# Terminal 2: find and join
+docker ps
+docker exec -it <container_id_or_name> bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+### Webots mesh paths
+
+The `rosmasterx3_sim` package uses STL mesh files referenced by absolute paths in `.wbt` world files. During the Docker build, these paths are automatically rewritten to resolve correctly inside the container via a `sed` step in the `Dockerfile`.
+
+If you add new packages that reference external assets (meshes, textures) via absolute paths in `.wbt` files, you must add a corresponding `sed` rewrite to the Dockerfile's build step to ensure those assets are found at runtime inside the container.
+
 ## Reference
 
 See [AGENTS.md](AGENTS.md) for a compact command reference and workspace quirks for agent-assisted workflows.
