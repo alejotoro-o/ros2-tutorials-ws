@@ -1,0 +1,4 @@
+int32 world
+---
+bool success
+string message
