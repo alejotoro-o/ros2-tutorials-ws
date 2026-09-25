@@ -1,41 +1,40 @@
-import rclpy
-from geometry_msgs.msg import Twist, Pose, TransformStamped
-from sensor_msgs.msg import JointState
-from nav_msgs.msg import Odometry
-from std_msgs.msg import Header
-from interfaces.srv import ResetSim
-
-from tf2_ros import TransformBroadcaster
-
 from controller import Supervisor
-
+from geometry_msgs.msg import Pose, TransformStamped, Twist
+from interfaces.srv import ResetSim
+from nav_msgs.msg import Odometry
 import numpy as np
+import rclpy
+from rclpy.parameter import Parameter
 from scipy.spatial.transform import Rotation as R
+from sensor_msgs.msg import JointState
+from std_msgs.msg import Header
+from tf2_ros import TransformBroadcaster
 
 L_X = 0.1
 L_Y = 0.12
 WHEEL_RADIUS = 0.04
 
+
 class RobotDriver:
     def init(self, webots_node, properties):
 
-        ## Robot node
+        # Robot node
         self.__robot = webots_node.robot
 
-        self.robot_name = self.__robot.getName() 
+        self.robot_name = self.__robot.getName()
 
-        ## Supervisor node
+        # Supervisor node
         self.supervisor = Supervisor()
         self.robot_node = self.supervisor.getFromDef(self.robot_name)
-        self.trans_field = self.robot_node.getField("translation")
-        self.rot_field = self.robot_node.getField("rotation")     
+        self.trans_field = self.robot_node.getField('translation')
+        self.rot_field = self.robot_node.getField('rotation')
 
-        ## Configure Lidar
+        # Configure Lidar
         self.__lidar = self.__robot.getDevice('lidar')
         self.__lidar.enable(32)
         self.__lidar.enablePointCloud()
 
-        ## Configure position sensors (Encoders)
+        # Configure position sensors (Encoders)
         self.__encoder1 = self.__robot.getDevice('encoder1')
         self.__encoder1.enable(32)
 
@@ -48,7 +47,7 @@ class RobotDriver:
         self.__encoder4 = self.__robot.getDevice('encoder4')
         self.__encoder4.enable(32)
 
-        ## Configure motors
+        # Configure motors
         self.__front_left_motor = self.__robot.getDevice('motor1')
         self.__front_right_motor = self.__robot.getDevice('motor2')
         self.__back_left_motor = self.__robot.getDevice('motor3')
@@ -68,74 +67,93 @@ class RobotDriver:
 
         self.__target_twist = Twist()
 
-        ## Node configuration
+        # Node configuration
+        odom_param = Parameter('odom_tf', Parameter.Type.BOOL, True)
         rclpy.init(args=None)
-        self.__node = rclpy.create_node('mecanum_robot_driver')
+        self.__node = rclpy.create_node(
+            'rl_robot_driver',
+            parameter_overrides=[odom_param],
+            automatically_declare_parameters_from_overrides=True,
+        )
+        self.enable_odom_tf = self.__node.get_parameter(
+            'odom_tf').get_parameter_value().bool_value
 
-        ## Node params
-        self.__node.declare_parameter('odom_tf', False)
-        self.enable_odom_tf = self.__node.get_parameter('odom_tf').get_parameter_value().bool_value
-
-        ## Topics and services
-        self.__node.create_subscription(Twist, 'cmd_vel', self.__cmd_vel_callback, 1)
-        self.__joint_states_publisher = self.__node.create_publisher(JointState, 'joint_states', 1)
-        self.__vel_publisher = self.__node.create_publisher(Twist, 'vel_raw', 1)
+        # Topics and services
+        self.__node.create_subscription(
+            Twist, 'cmd_vel', self.__cmd_vel_callback, 1)
+        self.__joint_states_publisher = self.__node.create_publisher(
+            JointState, 'joint_states', 1)
+        self.__vel_publisher = self.__node.create_publisher(
+            Twist, 'vel_raw', 1)
+        self.__pose_publisher = self.__node.create_publisher(
+            Pose, 'webots_pose', 1)
         if self.enable_odom_tf:
             self.__odometry_publisher = self.__node.create_publisher(Odometry, 'odom', 1)
-            self.__pose_publisher = self.__node.create_publisher(Pose, 'webots_pose', 1)
             self.tf_broadcaster = TransformBroadcaster(self.__node)
 
-        # Simulation control service
+        # Simulation control service (spawn_pose: x, y, theta from Pose2D)
         self.__node.create_service(ResetSim, '/reset_sim', self._reset_sim_service_callback)
 
     def __cmd_vel_callback(self, twist):
         self.__target_twist = twist
 
     def _reset_sim_service_callback(self, request, response):
+        # Read spawn pose from request (geometry_msgs/Pose2D)
+        spawn_x = request.pose.x
+        spawn_y = request.pose.y
+        spawn_yaw = request.pose.theta
 
-        reset_config = {"trans": [0.0, 0.0, 0.0], "rot": [0.00, 0.00, 1.00, 0.0]}, 
+        self.__node.get_logger().info(
+            f'Initiating reset -- spawn=({spawn_x:.2f}, {spawn_y:.2f}, '
+            f'yaw={spawn_yaw:.2f})'
+        )
 
-        self.__node.get_logger().info(f"Initiating soft reset for World...")
-
-        self.trans_field.setSFVec3f(reset_config["trans"])
-        self.rot_field.setSFRotation(reset_config["rot"])
+        # Teleport robot to spawn pose
+        self.trans_field.setSFVec3f([spawn_x, spawn_y, 0.075])
+        self.rot_field.setSFRotation([0.0, 0.0, 1.0, spawn_yaw])
         self.robot_node.resetPhysics()
 
-        # 4. Stop All Actuators
+        # Stop all actuators
         self.__front_left_motor.setVelocity(0.0)
         self.__front_right_motor.setVelocity(0.0)
         self.__back_left_motor.setVelocity(0.0)
         self.__back_right_motor.setVelocity(0.0)
 
-        # 5. Clear Internal Driver State
+        # Clear internal driver state
         self.__target_twist = Twist()
 
-        self.__node.get_logger().info('Simulation restarted...')
+        self.__node.get_logger().info('Simulation reset complete.')
 
         response.success = True
-        response.message = "Simulation restarted"
+        response.message = (
+            f'Reset to ({spawn_x:.2f}, {spawn_y:.2f}, yaw={spawn_yaw:.2f})'
+        )
 
         return response
 
     def step(self):
         rclpy.spin_once(self.__node, timeout_sec=0)
 
-        ## Set motor speeds
+        # Set motor speeds
         V_x = self.__target_twist.linear.x
         V_y = self.__target_twist.linear.y
         thetap = self.__target_twist.angular.z
 
-        command_motor_front_left = (V_x - V_y - (L_X + L_Y)*thetap) / WHEEL_RADIUS
-        command_motor_front_right = (V_x + V_y + (L_X + L_Y)*thetap) / WHEEL_RADIUS
-        command_motor_back_left = (V_x + V_y - (L_X + L_Y)*thetap) / WHEEL_RADIUS
-        command_motor_back_right = (V_x - V_y + (L_X + L_Y)*thetap) / WHEEL_RADIUS
+        command_motor_front_left = (
+            (V_x - V_y - (L_X + L_Y) * thetap) / WHEEL_RADIUS)
+        command_motor_front_right = (
+            (V_x + V_y + (L_X + L_Y) * thetap) / WHEEL_RADIUS)
+        command_motor_back_left = (
+            (V_x + V_y - (L_X + L_Y) * thetap) / WHEEL_RADIUS)
+        command_motor_back_right = (
+            (V_x - V_y + (L_X + L_Y) * thetap) / WHEEL_RADIUS)
 
-        self.__front_left_motor.setVelocity(command_motor_front_left) 
-        self.__front_right_motor.setVelocity(command_motor_front_right) 
+        self.__front_left_motor.setVelocity(command_motor_front_left)
+        self.__front_right_motor.setVelocity(command_motor_front_right)
         self.__back_left_motor.setVelocity(command_motor_back_left)
         self.__back_right_motor.setVelocity(command_motor_back_right)
 
-        ## Publish joint states
+        # Publish joint states
         joint_states_header = Header()
         joint_states_header.stamp = self.__node.get_clock().now().to_msg()
         joint_states_header.frame_id = ''
@@ -152,17 +170,15 @@ class RobotDriver:
 
         self.__joint_states_publisher.publish(joint_states)
         self.__vel_publisher.publish(self.__target_twist)
-        
-        ## Publish pose
+
+        # Publish pose
         pose_msg = Pose()
 
         trans = self.trans_field.getSFVec3f()
 
         rot = self.rot_field.getSFRotation()
-        r = R.from_rotvec(np.sign(rot[2])*rot[3]*np.array([0,0,1]))
-
-        # pose_msg.header.frame_id = 'map'
-        # pose_msg.header.stamp = self.__node.get_clock().now().to_msg()
+        r = R.from_rotvec(
+            np.sign(rot[2]) * rot[3] * np.array([0, 0, 1]))
 
         pose_msg.position.x = trans[0]
         pose_msg.position.y = trans[1]
@@ -174,43 +190,44 @@ class RobotDriver:
         pose_msg.orientation.z = r.as_quat()[2]
 
         self.__pose_publisher.publish(pose_msg)
-        
 
         if self.enable_odom_tf:
 
-            ## Publish odometry
+            # Publish odometry
             odometry_msg = Odometry()
-            
+
             odometry_msg.header.frame_id = 'odom'
-            odometry_msg.child_frame_id = self.robot_name + '/base_footprint'
-            odometry_msg.header.stamp = self.__node.get_clock().now().to_msg()
-    
+            odometry_msg.child_frame_id = (
+                self.robot_name + '/base_footprint')
+            odometry_msg.header.stamp = (
+                self.__node.get_clock().now().to_msg())
+
             odometry_msg.pose.pose.position.x = trans[0]
             odometry_msg.pose.pose.position.y = trans[1]
-            odometry_msg.pose.pose.position.z = 0.0 # trans[2]
-    
+            odometry_msg.pose.pose.position.z = 0.0
+
             odometry_msg.pose.pose.orientation.w = r.as_quat()[3]
             odometry_msg.pose.pose.orientation.x = r.as_quat()[0]
             odometry_msg.pose.pose.orientation.y = r.as_quat()[1]
             odometry_msg.pose.pose.orientation.z = r.as_quat()[2]
-    
+
             self.__odometry_publisher.publish(odometry_msg)
 
-            ## TF transform
+            # TF transform
             t = TransformStamped()
-    
+
             t.header.stamp = self.__node.get_clock().now().to_msg()
             t.header.frame_id = 'odom'
-            t.child_frame_id = self.robot_name + '/base_footprint'
-    
+            t.child_frame_id = (
+                self.robot_name + '/base_footprint')
+
             t.transform.translation.x = trans[0]
             t.transform.translation.y = trans[1]
-            t.transform.translation.z = 0.0 # trans[2]
-    
+            t.transform.translation.z = 0.0
+
             t.transform.rotation.x = r.as_quat()[0]
             t.transform.rotation.y = r.as_quat()[1]
             t.transform.rotation.z = r.as_quat()[2]
             t.transform.rotation.w = r.as_quat()[3]
 
             self.tf_broadcaster.sendTransform(t)
-

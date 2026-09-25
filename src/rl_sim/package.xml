@@ -3,9 +3,21 @@
 <package format="3">
   <name>rl_sim</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>RL-based navigation for mecanum robot in Webots</description>
   <maintainer email="alejotoro.o@gmail.com">alejandro</maintainer>
   <license>TODO: License declaration</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>interfaces</depend>
+  <depend>webots_ros2_driver</depend>
+
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

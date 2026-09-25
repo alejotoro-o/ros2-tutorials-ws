@@ -1,3 +1,6 @@
+from glob import glob
+import os
+
 from setuptools import find_packages, setup
 
 package_name = 'rl_sim'
@@ -10,15 +13,18 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + '/launch', ['launch/*']),
-        ('share/' + package_name + '/resource', ['resource/*']),
-        ('share/' + package_name + '/worlds', ['worlds/*.wbt']),
+        (os.path.join('share', package_name, 'launch'),
+            glob('launch/*.py')),
+        (os.path.join('share', package_name, 'resource'),
+            glob('resource/*')),
+        (os.path.join('share', package_name, 'worlds'),
+            glob('worlds/*.wbt')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='alejandro',
     maintainer_email='alejotoro.o@gmail.com',
-    description='TODO: Package description',
+    description='RL-based navigation for mecanum robot in Webots',
     license='TODO: License declaration',
     extras_require={
         'test': [
@@ -27,6 +33,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'train_ppo = rl_sim.train_ppo:main',
+            'inference_node = rl_sim.inference_node:main',
         ],
     },
 )
