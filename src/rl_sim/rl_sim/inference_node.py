@@ -139,9 +139,11 @@ class RLInferenceNode(Node):
 
     def _build_observation(self):
         lidar = np.zeros(self.lidar_samples, dtype=np.float32)
-        if self.scan is not None and len(self.scan) >= self.lidar_total:
-            step = self.lidar_total // self.lidar_samples
-            raw = self.scan[::step][: self.lidar_samples]
+        if self.scan is not None and len(self.scan) > 0:
+            raw = np.array(self.scan, dtype=np.float32)
+            indices = np.linspace(
+                0, len(raw) - 1, self.lidar_samples, dtype=int)
+            raw = raw[indices]
             raw = np.nan_to_num(raw, nan=self.lidar_max, posinf=self.lidar_max)
             lidar = np.clip(raw, 0.0, self.lidar_max) / self.lidar_max
 

@@ -37,8 +37,8 @@ class RLEnv(gym.Env, Node):
 
     metadata = {'render_modes': []}
 
-    def __init__(self):
-        Node.__init__(self, 'rl_sim_env')
+    def __init__(self, node_name='rl_sim_env'):
+        Node.__init__(self, node_name)
 
         # -- Action / observation spaces --
         self.use_lateral = ENV_CONFIG['use_lateral']
@@ -62,6 +62,9 @@ class RLEnv(gym.Env, Node):
         # -- MDP config --
         self.goal_tol = ENV_CONFIG['goal_tolerance']
         self.collision_d = ENV_CONFIG['collision_threshold']
+        self.obstacle_margin = ENV_CONFIG['obstacle_margin']
+        self.goal_margin = ENV_CONFIG['goal_margin']
+        self.spawn_clearance = ENV_CONFIG['spawn_clearance']
         self.max_steps = ENV_CONFIG['max_steps']
         self._max_rho = 12.0  # normalisation factor for goal distance
 
@@ -165,38 +168,77 @@ class RLEnv(gym.Env, Node):
                 ENV_CONFIG['goal_x_min'], ENV_CONFIG['goal_x_max'])
             y = np.random.uniform(
                 ENV_CONFIG['goal_y_min'], ENV_CONFIG['goal_y_max'])
-            if not self._is_in_obstacle(x, y):
+            if not self._is_in_obstacle(x, y, self.goal_margin):
                 return x, y
         return 0.0, 0.0
 
-    def _is_in_obstacle(self, x, y):
-        """Return True if (x, y) is inside any obstacle bounding box."""
+    def _is_in_obstacle(self, x, y, margin=None):
+        """
+        Return True if (x, y) lies within *margin* of an obstacle box.
+
+        ``margin`` defaults to the static-map obstacle margin but callers can
+        pass a larger value (e.g. for goal sampling).
+        """
+        if margin is None:
+            margin = self.obstacle_margin
         for (xmin, ymin, xmax, ymax) in OBSTACLES:
-            if xmin <= x <= xmax and ymin <= y <= ymax:
+            if (xmin - margin <= x <= xmax + margin
+                    and ymin - margin <= y <= ymax + margin):
                 return True
         return False
 
-    def _sample_spawn_pose(self, max_attempts=100):
-        """Sample a random spawn pose, rejecting positions inside obstacles."""
+    def _sample_spawn_pose(self, max_attempts=30):
+        """
+        Sample a spawn pose with a real safety margin.
+
+        A candidate must be clear of the static obstacle map *and* have a
+        lidar reading above ``spawn_clearance``, which is well above the
+        collision threshold used to terminate an episode.
+        """
         for _ in range(max_attempts):
             x = np.random.uniform(
                 ENV_CONFIG['spawn_x_min'], ENV_CONFIG['spawn_x_max'])
             y = np.random.uniform(
                 ENV_CONFIG['spawn_y_min'], ENV_CONFIG['spawn_y_max'])
-            if not self._is_in_obstacle(x, y):
-                yaw = np.random.uniform(-math.pi, math.pi)
-                return x, y, yaw
-        # Fallback: known safe position
-        self.get_logger().warn('Could not find free spawn, using fallback')
+            if self._is_in_obstacle(x, y, self.obstacle_margin):
+                continue
+            yaw = np.random.uniform(-math.pi, math.pi)
+            # Teleport and verify with the actual lidar
+            self._teleport(x, y, yaw)
+            if self.scan is not None and len(self.scan) > 0:
+                min_dist = float(np.min(self.scan))
+                if min_dist > self.spawn_clearance:
+                    return x, y, yaw
+        self.get_logger().warn(
+            'Could not find a safe spawn, using arena centre')
+        self._teleport(0.0, 0.0, 0.0)
         return 0.0, 0.0, 0.0
+
+    def _teleport(self, x, y, yaw):
+        """Teleport robot and wait for fresh sensor data."""
+        req = ResetSim.Request()
+        req.pose.x = float(x)
+        req.pose.y = float(y)
+        req.pose.theta = float(yaw)
+        future = self.reset_client.call_async(req)
+        while rclpy.ok() and not future.done():
+            rclpy.spin_once(self, timeout_sec=0.01)
+        self.cmd_pub.publish(Twist())
+        self._spin_for(0.3)
+        self.scan = None
+        self.pose = None
+        self.odom = None
+        self._spin_until_data(timeout=5.0)
 
     # -- Observation builder -------------------------------------------------
 
     def _build_observation(self):
         lidar = np.zeros(self.lidar_samples, dtype=np.float32)
-        if self.scan is not None and len(self.scan) >= self.lidar_total:
-            step = self.lidar_total // self.lidar_samples
-            raw = self.scan[::step][: self.lidar_samples]
+        if self.scan is not None and len(self.scan) > 0:
+            raw = np.array(self.scan, dtype=np.float32)
+            indices = np.linspace(
+                0, len(raw) - 1, self.lidar_samples, dtype=int)
+            raw = raw[indices]
             raw = np.nan_to_num(raw, nan=self.lidar_max, posinf=self.lidar_max)
             lidar = np.clip(raw, 0.0, self.lidar_max) / self.lidar_max
 
@@ -235,11 +277,12 @@ class RLEnv(gym.Env, Node):
         reward += REWARD_CONFIG['progress_weight'] * (self.prev_dist - dist)
         self.prev_dist = dist
 
+        # Heading alignment -- small bonus for facing the goal
+        alpha = self._angle_to_goal()
+        reward += REWARD_CONFIG['heading_weight'] * math.cos(alpha)
+
         # Step penalty
         reward += REWARD_CONFIG['step_penalty']
-
-        # Smoothness
-        reward -= REWARD_CONFIG['smoothness_weight'] * (w ** 2)
 
         # Proximity to obstacles
         if min_scan < REWARD_CONFIG['proximity_threshold']:
@@ -265,40 +308,18 @@ class RLEnv(gym.Env, Node):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
 
-        # Sample spawn pose and goal
-        sx, sy, syaw = self._sample_spawn_pose()
+        # Sample a safe spawn pose. This teleports the robot there and waits
+        # for fresh sensor data, so there is no need to teleport again.
+        sx, sy, _ = self._sample_spawn_pose()
         self.goal_x, self.goal_y = self._sample_goal()
-
-        # Call /reset_sim service with spawn pose (non-blocking spin)
-        req = ResetSim.Request()
-        req.pose.x = float(sx)
-        req.pose.y = float(sy)
-        req.pose.theta = float(syaw)
-        future = self.reset_client.call_async(req)
-        while rclpy.ok() and not future.done():
-            rclpy.spin_once(self, timeout_sec=0.01)
-        result = future.result()
-        if not result.success:
-            self.get_logger().error(f'Reset failed: {result.message}')
-
-        # Stop robot
-        self.cmd_pub.publish(Twist())
-
-        # Let physics settle
-        self._spin_for(0.5)
-
-        # Flush old sensor data and wait for fresh data
-        self.scan = None
-        self.pose = None
-        self.odom = None
-        self._spin_until_data(timeout=30.0)
 
         self.steps = 0
         self.prev_dist = self._distance_to_goal()
         obs = self._build_observation()
 
         self.get_logger().info(
-            f'Episode started -- goal=({self.goal_x:.2f}, {self.goal_y:.2f}), '
+            f'Episode started -- spawn=({sx:.2f}, {sy:.2f}), '
+            f'goal=({self.goal_x:.2f}, {self.goal_y:.2f}), '
             f'dist={self.prev_dist:.2f}'
         )
         return obs, {}

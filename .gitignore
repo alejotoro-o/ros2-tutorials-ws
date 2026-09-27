@@ -2,3 +2,10 @@
 build
 install
 log
+
+# rl_sim
+best_model
+checkpoints
+eval_logs
+ppo_rl_sim_tb
+ppo_rl_sim_navigation.zip
