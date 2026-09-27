@@ -79,10 +79,17 @@ REWARD_CONFIG = {
     'heading_weight': 0.1,          # bonus for facing the goal
 }
 
+# -- Training output paths ----------------------------------------------------
+# All training artifacts (model, checkpoints, eval logs, TensorBoard) are kept
+# under a single directory for organisation.
+TRAIN_ROOT = './rl_sim_training'
+
 # -- PPO training hyperparameters ---------------------------------------------
 TRAIN_CONFIG = {
     'learning_rate': 3e-4,
-    'n_steps': 2048,
+    # Small rollouts so TensorBoard logs and PPO updates happen frequently;
+    # the Webots env advances in real time (~10 steps/s).
+    'n_steps': 512,
     'batch_size': 64,
     'gamma': 0.95,
     'gae_lambda': 0.95,
@@ -90,13 +97,17 @@ TRAIN_CONFIG = {
     # Wall-clock bound: the env advances in real time (~10 steps/s), so keep
     # this realistic. 300k steps is roughly 8 h on a typical machine.
     'total_timesteps': 300_000,
-    'save_path': 'ppo_rl_sim_navigation',
-    'tensorboard_log': './ppo_rl_sim_tb/',
+    'train_root': TRAIN_ROOT,
+    'save_path': TRAIN_ROOT + '/ppo_rl_sim_navigation',
+    'tensorboard_log': TRAIN_ROOT + '/ppo_rl_sim_tb/',
+    'checkpoint_dir': TRAIN_ROOT + '/checkpoints/',
+    'best_model_dir': TRAIN_ROOT + '/best_model/',
+    'eval_log_dir': TRAIN_ROOT + '/eval_logs/',
     # NOTE: the values below are in TIMESTEPS (SB3 callback unit), NOT rollout
     # batches. Do not divide them by 'n_steps'.
-    'checkpoint_freq': 20_000,
-    'eval_freq': 10_000,
-    'n_eval_episodes': 5,
+    'checkpoint_freq': 5_000,
+    'eval_freq': 2_500,
+    'n_eval_episodes': 3,
     'early_stop_min_evals': 10,
     'early_stop_max_no_improvement_evals': 10,
     'device': 'cpu',  # 'cpu' | 'cuda' | 'auto'

@@ -17,6 +17,7 @@ from rl_sim.hyperparams import (
     ROBOT_CONFIG,
     SCAN_TOPIC,
     SETPOINT_TOPIC,
+    TRAIN_CONFIG,
 )
 from sensor_msgs.msg import LaserScan
 
@@ -36,7 +37,7 @@ class RLInferenceNode(Node):
         super().__init__('rl_sim_inference')
 
         # -- Parameters --
-        self.declare_parameter('model_path', 'ppo_rl_sim_navigation')
+        self.declare_parameter('model_path', TRAIN_CONFIG['save_path'])
         self.declare_parameter('goal_x', 0.0)
         self.declare_parameter('goal_y', 0.0)
 
