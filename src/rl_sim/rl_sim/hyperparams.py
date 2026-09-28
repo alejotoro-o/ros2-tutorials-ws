@@ -103,6 +103,13 @@ TRAIN_CONFIG = {
     'checkpoint_dir': TRAIN_ROOT + '/checkpoints/',
     'best_model_dir': TRAIN_ROOT + '/best_model/',
     'eval_log_dir': TRAIN_ROOT + '/eval_logs/',
+    # -- Resume ---------------------------------------------------------------
+    # If True, continue from an existing model/checkpoint instead of starting
+    # from scratch. If nothing exists yet, a fresh run begins automatically.
+    'resume': True,
+    # Explicit .zip to resume from (final model or a checkpoint). If None, use
+    # '<save_path>.zip', falling back to the newest checkpoint.
+    'resume_from': None,
     # NOTE: the values below are in TIMESTEPS (SB3 callback unit), NOT rollout
     # batches. Do not divide them by 'n_steps'.
     'checkpoint_freq': 5_000,

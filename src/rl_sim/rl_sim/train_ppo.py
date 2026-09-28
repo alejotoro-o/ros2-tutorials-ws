@@ -4,9 +4,11 @@
 import os
 
 import rclpy
+from rclpy.signals import SignalHandlerOptions
 
 from rl_sim.hyperparams import TRAIN_CONFIG
 from rl_sim.rl_env import RLEnv
+from rl_sim.train_utils import load_eval_history, resolve_resume_path
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import (
     BaseCallback,
@@ -31,7 +33,9 @@ class EpisodeLogCallback(BaseCallback):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+    rclpy.init(args=args,
+               signal_handler_options=SignalHandlerOptions.SIGTERM)
+    log = rclpy.logging.get_logger('rl_sim')
 
     device = TRAIN_CONFIG.get('device', 'cpu')
 
@@ -44,20 +48,46 @@ def main(args=None):
     # environment's episode state.
     eval_env = Monitor(RLEnv(node_name='rl_sim_eval_env'))
 
-    model = PPO(
-        policy='MlpPolicy',
-        env=env,
-        learning_rate=TRAIN_CONFIG['learning_rate'],
-        n_steps=TRAIN_CONFIG['n_steps'],
-        batch_size=TRAIN_CONFIG['batch_size'],
-        gamma=TRAIN_CONFIG['gamma'],
-        gae_lambda=TRAIN_CONFIG['gae_lambda'],
-        ent_coef=TRAIN_CONFIG['ent_coef'],
-        verbose=1,
-        tensorboard_log=TRAIN_CONFIG['tensorboard_log'],
-        device=device,
-        policy_kwargs=TRAIN_CONFIG.get('policy_kwargs', {}),
-    )
+    resume_path = None
+    if TRAIN_CONFIG.get('resume', False):
+        resume_path = resolve_resume_path(
+            TRAIN_CONFIG['save_path'],
+            TRAIN_CONFIG['checkpoint_dir'],
+            TRAIN_CONFIG.get('resume_from'))
+        if resume_path is None:
+            log.warn('resume=True but no model/checkpoint found; fresh run.')
+
+    if resume_path is not None:
+        model = PPO.load(
+            resume_path,
+            env=env,
+            device=device,
+            tensorboard_log=TRAIN_CONFIG['tensorboard_log'],
+        )
+        remaining = max(
+            0, TRAIN_CONFIG['total_timesteps'] - model.num_timesteps)
+        reset_num_timesteps = False
+        log.info(
+            f'Resuming from {resume_path} at {model.num_timesteps} steps '
+            f'({remaining} remaining)'
+        )
+    else:
+        model = PPO(
+            policy='MlpPolicy',
+            env=env,
+            learning_rate=TRAIN_CONFIG['learning_rate'],
+            n_steps=TRAIN_CONFIG['n_steps'],
+            batch_size=TRAIN_CONFIG['batch_size'],
+            gamma=TRAIN_CONFIG['gamma'],
+            gae_lambda=TRAIN_CONFIG['gae_lambda'],
+            ent_coef=TRAIN_CONFIG['ent_coef'],
+            verbose=1,
+            tensorboard_log=TRAIN_CONFIG['tensorboard_log'],
+            device=device,
+            policy_kwargs=TRAIN_CONFIG.get('policy_kwargs', {}),
+        )
+        remaining = TRAIN_CONFIG['total_timesteps']
+        reset_num_timesteps = True
 
     checkpoint_cb = CheckpointCallback(
         # save_freq is in TIMESTEPS (not rollout batches).
@@ -84,21 +114,27 @@ def main(args=None):
         callback_after_eval=stop_train_cb,
     )
 
+    if resume_path is not None and load_eval_history(
+            eval_cb, TRAIN_CONFIG['eval_log_dir']):
+        log.info('Restored previous evaluation history.')
+
     episode_log_cb = EpisodeLogCallback()
 
-    try:
-        model.learn(
-            total_timesteps=TRAIN_CONFIG['total_timesteps'],
-            callback=[episode_log_cb, checkpoint_cb, eval_cb],
-        )
-    except KeyboardInterrupt:
-        rclpy.logging.get_logger('rl_sim').warn(
-            'Training interrupted -- saving the current model.')
+    if remaining > 0:
+        try:
+            model.learn(
+                total_timesteps=remaining,
+                callback=[episode_log_cb, checkpoint_cb, eval_cb],
+                reset_num_timesteps=reset_num_timesteps,
+                tb_log_name='PPO',
+            )
+        except KeyboardInterrupt:
+            log.warn('Training interrupted -- saving the current model.')
+    else:
+        log.info('Training budget already reached; saving current model.')
 
     model.save(TRAIN_CONFIG['save_path'])
-    rclpy.logging.get_logger('rl_sim').info(
-        f'Model saved to {TRAIN_CONFIG["save_path"]}.zip'
-    )
+    log.info(f'Model saved to {TRAIN_CONFIG["save_path"]}.zip')
 
     env.close()
     eval_env.close()

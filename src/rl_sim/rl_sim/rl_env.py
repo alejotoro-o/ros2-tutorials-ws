@@ -362,5 +362,7 @@ class RLEnv(gym.Env, Node):
         return obs, float(reward), terminated, truncated, info
 
     def close(self):
+        if not rclpy.ok():
+            return
         self.cmd_pub.publish(Twist())
         self.destroy_node()
